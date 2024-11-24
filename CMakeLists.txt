@@ -13,10 +13,12 @@ project(
 
 set(
     ASS2SRT_SOURCES
+    src/argparser.cpp
     src/somemodule.cpp
 )
 set(
     ASS2SRT_TEST_SOURCES
+    tests/argparser_test.cpp
     tests/somemodule_test.cpp
 )
 
