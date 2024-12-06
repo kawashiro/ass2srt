@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <string>
 
-namespace ass2srt { namespace ass { namespace section {
+namespace ass2srt::ass::section {
     /**
      * Possible file sections
      */
@@ -50,6 +50,6 @@ namespace ass2srt { namespace ass { namespace section {
      * Parse the section definition
      */
     Section parse(std::string &);
-} } }
+}
 
 #endif

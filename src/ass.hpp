@@ -4,11 +4,11 @@
 #include <istream>
 #include "subline.hpp"
 
-namespace ass2srt { namespace ass {
+namespace ass2srt::ass {
     /**
      * Parse input ASS data
      */
     subtitles_t&& parse_ass_stream(std::istream &);
-} }
+}
 
 #endif

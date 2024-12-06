@@ -4,7 +4,7 @@
 #include <memory>
 #include <stdint.h>
 
-namespace ass2srt { namespace statemachine {
+namespace ass2srt::statemachine {
     /**
      * Abstract state node
      */
@@ -72,6 +72,6 @@ namespace ass2srt { namespace statemachine {
             curr_state = curr_state->transition(value);
         }
     }
-} }
+}
 
 #endif

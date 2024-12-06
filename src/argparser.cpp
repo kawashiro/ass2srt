@@ -26,12 +26,12 @@ static const std::set<std::string> split_set_arg(char *input)
     return res;
 }
 
-bool argparser::runtime_config::is_valid() const
+bool argparser::args::is_valid() const
 {
     return !this->has_extra_opts && !this->input_file.empty() && !this->output_file.empty();
 }
 
-const argparser::runtime_config argparser::parse_args(int argc, char **argv)
+const argparser::args argparser::parse_args(int argc, char **argv)
 {
     std::string input_file = "";
     std::string output_file = "";
@@ -63,7 +63,7 @@ const argparser::runtime_config argparser::parse_args(int argc, char **argv)
         }
     }
 
-    return runtime_config {
+    return {
         input_file,
         output_file,
         styles_scope,

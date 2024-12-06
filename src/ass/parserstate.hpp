@@ -17,7 +17,7 @@
         void output(ass_res_t &value);                     \
     }
 
-namespace ass2srt { namespace ass { namespace parserstate {
+namespace ass2srt::ass::parserstate {
     /**
      * Intermediate parsing result
      */
@@ -66,7 +66,6 @@ namespace ass2srt { namespace ass { namespace parserstate {
      * Final state
      */
     typedef statemachine::FinalState<ass_res_t> FinalState;
-} } }
-
+}
 
 #endif

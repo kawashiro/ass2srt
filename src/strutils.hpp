@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace ass2srt { namespace strutils {
+namespace ass2srt::strutils {
     /**
      * Trim from start (in place)
      */
@@ -18,6 +18,6 @@ namespace ass2srt { namespace strutils {
      * Trim from both sides (in place)
      */
     void trim(std::string &);
-} }
+}
 
 #endif

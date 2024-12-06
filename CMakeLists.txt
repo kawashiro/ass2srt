@@ -17,14 +17,12 @@ set(
     src/ass/parserstate.cpp
     src/ass/section.cpp
     src/argparser.cpp
-    src/somemodule.cpp
     src/strutils.cpp
 )
 set(
     ASS2SRT_TEST_SOURCES
     tests/ass_test.cpp
     tests/argparser_test.cpp
-    tests/somemodule_test.cpp
 )
 
 add_executable(ass2srt ${ASS2SRT_SOURCES} src/main.cpp)

@@ -4,11 +4,11 @@
 #include <set>
 #include <string>
 
-namespace ass2srt { namespace argparser {
+namespace ass2srt::argparser {
     /**
      * Config passed by input args
      */
-    struct runtime_config {
+    struct args {
         /**
          * Input file
          */
@@ -48,7 +48,7 @@ namespace ass2srt { namespace argparser {
     /**
      * Parser arguments
      */
-    const runtime_config parse_args(int argc, char **argv);
-} }
+    const args parse_args(int argc, char **argv);
+}
 
 #endif
