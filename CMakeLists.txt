@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.25.0)
 
 set(CMAKE_VERBOSE_MAKEFILE on)
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(
@@ -13,11 +13,16 @@ project(
 
 set(
     ASS2SRT_SOURCES
+    src/ass.cpp
+    src/ass/parserstate.cpp
+    src/ass/section.cpp
     src/argparser.cpp
     src/somemodule.cpp
+    src/strutils.cpp
 )
 set(
     ASS2SRT_TEST_SOURCES
+    tests/ass_test.cpp
     tests/argparser_test.cpp
     tests/somemodule_test.cpp
 )
