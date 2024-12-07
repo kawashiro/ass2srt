@@ -14,7 +14,7 @@
         public:                                                          \
         static const uint8_t id = (ID);                                  \
         virtual std::unique_ptr<StateType> transition(ass_res_t &value); \
-        void output(ass_res_t &value);                     \
+        void output(ass_res_t &value);                                   \
     }
 
 namespace ass2srt::ass::parserstate {
@@ -26,11 +26,11 @@ namespace ass2srt::ass::parserstate {
         std::istream &istream;
         subtitles_t &result;
         std::string token;
+        int v_size;
+        int line_no;
         bool eof;
 
-        ass_res_t(std::istream &istream_, subtitles_t &result_);
-
-        ass_res_t& operator=(ass_res_t& value);
+        ass_res_t(std::istream &, subtitles_t &);
     };
 
     /**
@@ -48,6 +48,7 @@ namespace ass2srt::ass::parserstate {
         SCRIPT_INFO,
         // STYLES,
         // ...
+        UNSUPPORTED,
         
         FINAL = UINT8_MAX
     };
@@ -61,6 +62,11 @@ namespace ass2srt::ass::parserstate {
      * Global script metadata section
      */
     PARSER_STATE_CLASS_DECL(ScriptInfoSectionState, SCRIPT_INFO);
+
+    /**
+     * It is a valid section declaration but we have no need to support it yet
+     */
+    PARSER_STATE_CLASS_DECL(UnsupportedSectionState, UNSUPPORTED);
 
     /**
      * Final state

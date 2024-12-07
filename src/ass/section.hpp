@@ -10,9 +10,7 @@ namespace ass2srt::ass::section {
      */
     enum Section
     {
-        ROOT = 0,
-
-        SCRIPT_INFO,
+        SCRIPT_INFO = 0,
         STYLES,
         EVENTS,
         // ...

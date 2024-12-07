@@ -1,6 +1,7 @@
 #include <algorithm> 
 #include <cctype>
 #include <locale>
+#include <string>
 #include "strutils.hpp"
 
 using namespace ass2srt;
@@ -35,3 +36,4 @@ void strutils::trim(std::string &string) {
     strutils::rtrim(string);
     strutils::ltrim(string);
 }
+

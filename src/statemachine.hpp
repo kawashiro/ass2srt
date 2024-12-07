@@ -45,12 +45,12 @@ namespace ass2srt::statemachine {
         public:
         static const uint8_t id = UINT8_MAX;
 
-        virtual std::unique_ptr<State<T>> transition(T &value)
+        virtual std::unique_ptr<State<T>> transition(T &)
         {
             return std::make_unique<FinalState<T>>();
         };
 
-        virtual void output(T &value)
+        virtual void output(T &)
         {
         }
 

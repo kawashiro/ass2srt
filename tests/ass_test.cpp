@@ -1,7 +1,7 @@
 #include <span>
 #include <spanstream>
 #include <fstream>
-#include <string>
+#include <string.h>
 #include <gtest/gtest.h>
 #include "ass.hpp"
 
@@ -28,10 +28,9 @@ static const char *good_file_content = (
 
 static std::ispanstream c_str_to_stream(const char *input)
 {
-    size_t size = 0;
-    for (; *(input + size) != 0; ++size);
-
+    size_t size = strlen(input);
     std::span<char> input_span(const_cast<char*>(input), size);
+
     return std::ispanstream(input_span);
 }
 
