@@ -2,9 +2,11 @@
 #define _ASS2SRT_ASS_PARSERSTATE_H
 
 #include <istream>
+#include <list>
 #include <memory>
 #include <stdint.h>
 #include <string>
+#include <unordered_map>
 #include "../statemachine.hpp"
 #include "../subline.hpp"
 
@@ -23,9 +25,16 @@ namespace ass2srt::ass::parserstate {
      */
     struct ass_res_t
     {
+        struct styles_spec_t
+        {
+            uint8_t alignment;
+            int margin_v;
+        };
         std::istream &istream;
         subtitles_t &result;
         std::string token;
+        std::list<std::string> styles_format;
+        std::unordered_map<std::string, styles_spec_t> styles_spec;
         int v_size;
         int line_no;
         bool eof;
@@ -46,7 +55,9 @@ namespace ass2srt::ass::parserstate {
         INITIAL = 0,
 
         SCRIPT_INFO,
-        // STYLES,
+        STYLES,
+        STYLES_FORMAT,
+        STYLE_SPEC,
         // ...
         UNSUPPORTED,
         
@@ -62,6 +73,21 @@ namespace ass2srt::ass::parserstate {
      * Global script metadata section
      */
     PARSER_STATE_CLASS_DECL(ScriptInfoSectionState, SCRIPT_INFO);
+
+    /**
+     * Styles section
+     */
+    PARSER_STATE_CLASS_DECL(StylesSectionState, STYLES);
+
+    /**
+     * Styles format desc
+     */
+    PARSER_STATE_CLASS_DECL(StylesFormatState, STYLES_FORMAT);
+
+    /**
+     * Style line
+     */
+    PARSER_STATE_CLASS_DECL(StyleSpecState, STYLE_SPEC);
 
     /**
      * It is a valid section declaration but we have no need to support it yet

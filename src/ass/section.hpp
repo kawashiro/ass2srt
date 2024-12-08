@@ -13,8 +13,6 @@ namespace ass2srt::ass::section {
         SCRIPT_INFO = 0,
         STYLES,
         EVENTS,
-        // ...
-        
         UNKNOWN = UINT8_MAX
     };
 
