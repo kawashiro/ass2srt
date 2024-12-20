@@ -21,6 +21,14 @@ namespace ass2srt::strutils {
      */
     void trim(std::string &);
 
+    /**
+     * Replace all the occurences of the string
+     */
+    void replace_all(std::string &, const std::string &, const std::string &);
+
+    /**
+     * Safely format the string
+     */
     template<typename... T>
     std::string format(const std::string &format, T... args)
     {

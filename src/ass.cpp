@@ -6,7 +6,7 @@
 
 using namespace ass2srt;
 
-subtitles_t&& ass::parse_ass_stream(std::istream &input)
+subtitles_t ass::parse_ass_stream(std::istream &input)
 {
     subtitles_t subtitles;
 
@@ -14,5 +14,5 @@ subtitles_t&& ass::parse_ass_stream(std::istream &input)
     auto initial_state = new ass::parserstate::InitialState();
 
     statemachine::run<ass::parserstate::ass_res_t>(initial_state, value);
-    return std::move(value.result);
+    return value.result;
 }

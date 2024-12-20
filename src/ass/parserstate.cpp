@@ -1,16 +1,25 @@
+#include <cstring>
 #include <istream>
 #include <list>
 #include <memory>
+#include <set>
 #include <stdexcept>
 #include <stdio.h>
 #include <string>
 #include "parserstate.hpp"
+#include "field.hpp"
+#include "line.hpp"
 #include "section.hpp"
+#include "vpos.hpp"
 #include "../strutils.hpp"
 
 using namespace ass2srt::ass::parserstate;
 
 typedef ass2srt::ass::section::Section Section;
+typedef ass2srt::ass::line::LineType LineType;
+typedef ass2srt::ass::field::FieldType FieldType;
+typedef ass2srt::ass::field::LineValuesParser LineValuesParser;
+typedef ass2srt::ass::field::styles_spec_t style_spec_t;
 
 #define PARSERSTATE_HANDLE_DUMMY_LINE(C, V)                    \
     do {                                                       \
@@ -22,21 +31,26 @@ typedef ass2srt::ass::section::Section Section;
         }                                                      \
     } while (0)
 
-#define PARSERSTATE_HANDLE_SECTION_BREAK(V)          \
-    do {                                             \
-        try {                                        \
-            auto section = parse_section((V).token); \
-            return get_state_for_section(section);   \
-        } catch (const std::invalid_argument &e) {   \
-        }                                            \
+#define PARSERSTATE_HANDLE_SECTION_BREAK(V)                \
+    do {                                                   \
+        try {                                              \
+            auto section = ass::section::parse((V).token); \
+            return get_state_for_section(section);         \
+        } catch (const std::invalid_argument &e) {         \
+        }                                                  \
     } while (0)
 
 #define STATE_PTR(CLS) std::make_unique<CLS>()
+
+const unsigned char bom[3] = {0xEF, 0xBB, 0xBF};
 
 static void get_whole_line_token(ass_res_t &value)
 {
     std::string line;
     if (std::getline(value.istream, line)) {
+        if (std::memcmp(line.c_str(), bom, 3) == 0) {
+            line.erase(0, 3);
+        }
         ass2srt::strutils::trim(line);
         value.token = line;
         value.line_no++;
@@ -46,21 +60,7 @@ static void get_whole_line_token(ass_res_t &value)
     }
 }
 
-static std::string get_line_value(std::string &input)
-{
-    size_t separator_pos = input.find(":", 0);
-    auto line = input.substr(separator_pos + 1, input.length() - separator_pos - 1);
-    ass2srt::strutils::trim(line);
-
-    return line;
-}
-
-static inline Section parse_section(std::string &value)
-{
-    return ass2srt::ass::section::parse(value);
-}
-
-std::unique_ptr<StateType> get_state_for_section(Section section)
+static std::unique_ptr<StateType> get_state_for_section(Section section)
 {
     std::unique_ptr<StateType> res;
 
@@ -74,6 +74,9 @@ std::unique_ptr<StateType> get_state_for_section(Section section)
         break;
 
     case Section::EVENTS:
+        res = STATE_PTR(EventsSectionState);
+        break;
+
     case Section::UNKNOWN:
         res = STATE_PTR(UnsupportedSectionState);
     }
@@ -86,6 +89,7 @@ ass_res_t::ass_res_t(std::istream &istream_, subtitles_t &result_):
     result(result_),
     token(""),
     styles_format({}),
+    events_format({}),
     styles_spec({}),
     v_size(-1),
     line_no(0),
@@ -99,10 +103,10 @@ std::unique_ptr<StateType> InitialState::transition(ass_res_t &value)
     PARSERSTATE_HANDLE_DUMMY_LINE(InitialState, value);
 
     try {
-        auto section = parse_section(value.token);
+        auto section = ass::section::parse(value.token);
         return get_state_for_section(section);
     } catch (const std::invalid_argument &e) {
-        throw std::runtime_error(ass2srt::strutils::format("%s at line %d (%s)", e.what(), value.line_no, value.token));
+        throw std::runtime_error(strutils::format("%s at line %d (%s)", e.what(), value.line_no, value.token));
     }
 }
 
@@ -117,15 +121,12 @@ std::unique_ptr<StateType> ScriptInfoSectionState::transition(ass_res_t &value)
     PARSERSTATE_HANDLE_DUMMY_LINE(ScriptInfoSectionState, value);
     PARSERSTATE_HANDLE_SECTION_BREAK(value);
 
-    size_t separator_pos = value.token.find(":", 0);
-    if (separator_pos == std::string::npos) {
-        throw std::runtime_error(ass2srt::strutils::format("Invalid script info record at line %d (%s)", value.line_no, value.token));
-    }
+    std::string res_y;
+    auto line_type = ass::line::parse_type(value.token);
 
-    auto key = value.token.substr(0, separator_pos);
-    if (key == "PlayResY") {
-        // Only this is needed for us
-        auto res_y = value.token.substr(separator_pos + 1, value.token.length() - separator_pos - 1);
+    // Only this is needed for us
+    if (line_type == line::PLAY_RES_Y) {
+        auto res_y = ass::line::get_line_value(value.token);
         int v_size = std::stoi(res_y);
         value.v_size = v_size;
     }
@@ -141,25 +142,23 @@ void ScriptInfoSectionState::output(ass_res_t &value)
 // StylesSectionState
 std::unique_ptr<StateType> StylesSectionState::transition(ass_res_t &value)
 {
-    PARSERSTATE_HANDLE_DUMMY_LINE(ScriptInfoSectionState, value);
+    PARSERSTATE_HANDLE_DUMMY_LINE(StylesSectionState, value);
     PARSERSTATE_HANDLE_SECTION_BREAK(value);
 
-    size_t separator_pos = value.token.find(":", 0);
-    if (separator_pos == std::string::npos) {
-        throw std::runtime_error(ass2srt::strutils::format("Invalid styles line at line %d (%s)", value.line_no, value.token));
-    }
-
-    auto line_type = value.token.substr(0, separator_pos);
-    if (line_type == "Format") {
+    auto line_type = ass::line::parse_type(value.token);
+    switch (line_type) {
+    case line::FORMAT:
         if (!value.styles_format.empty()) {
-            throw std::runtime_error(ass2srt::strutils::format("Redeclaration of styles section format at line %d (%s)", value.line_no, value.token));
+            throw std::runtime_error(strutils::format("Redeclaration of styles section format at line %d (%s)", value.line_no, value.token));
         }
         return STATE_PTR(StylesFormatState);
-    } else if (line_type == "Style") {
-        return STATE_PTR(StyleSpecState);
-    }
 
-    throw std::runtime_error(ass2srt::strutils::format("Invalid styles line type at line %d (%s)", value.line_no, value.token));
+    case line::STYLE:
+        return STATE_PTR(StyleSpecState);
+    
+    default:
+        throw std::runtime_error(strutils::format("Invalid styles line type at line %d (%s)", value.line_no, value.token));
+    }
 }
 
 void StylesSectionState::output(ass_res_t &value)
@@ -170,72 +169,192 @@ void StylesSectionState::output(ass_res_t &value)
 // StylesFormatState
 std::unique_ptr<StateType> StylesFormatState::transition(ass_res_t &value)
 {
-    std::list<std::string> fields;
-    std::string input = value.token;
-    size_t pos = 0;
-    std::string token;
-    while ((pos = input.find(',')) != std::string::npos) {
-        token = input.substr(0, pos);
-        ass2srt::strutils::trim(token);
-        fields.push_back(token);
-        input.erase(0, pos + 1);
-    }
-    ass2srt::strutils::trim(input);
-    fields.push_back(input);
-
-    value.styles_format = fields;
-
+    value.styles_format = ass::line::parse_format_declaration(value.token, {});
     return STATE_PTR(StylesSectionState);
 }
 
 void StylesFormatState::output(ass_res_t &value)
 {
-    value.token = get_line_value(value.token);
+    value.token = ass::line::get_line_value(value.token);
 }
 
 // StyleSpecState
 std::unique_ptr<StateType> StyleSpecState::transition(ass_res_t &value)
 {
-    size_t str_pos = 0;
-    ass_res_t::styles_spec_t style { 2, 0 };
-    std::string style_name = "";
-    for (auto field : value.styles_format) {
-        if (field == "Name") {
-            style_name = value.token.substr(str_pos, value.token.find(',', str_pos) - str_pos);
-
-        } else if (field == "Alignment") {
-            auto alignment = value.token.substr(str_pos, value.token.find(',', str_pos) - str_pos);
-            int alignment_i = std::stoi(alignment);
-            if (alignment_i < 1 || alignment_i > 11) {
-                throw std::runtime_error(ass2srt::strutils::format("Invalid alignment at line %d (%s)", value.line_no, alignment));
-            }
-            style.alignment = alignment_i;
-            
-        } else if (field == "MarginV") {
-            auto margin_v = value.token.substr(str_pos, value.token.find(',', str_pos) - str_pos);
-            int margin_v_i = std::stoi(margin_v);
-            style.margin_v = margin_v_i;
-        }
-        str_pos = value.token.find(',', str_pos) + 1;
-    }
+    LineValuesParser parser;
     
+    parser.on<std::string>(field::NAME, [](std::string &value) {
+        return new std::string(value);
+    });
+
+    parser.on<int>(field::ALIGNMENT, [](std::string &value) {
+        auto alignment_i = std::stoi(value);
+        if (!ALIGN_VALID(alignment_i)) {
+            throw std::runtime_error(strutils::format("Invalid alignment %s", value));
+        }
+        return new int(alignment_i);
+    });
+
+    parser.on<int>(field::MARGIN_V, [](std::string &value) {
+        auto margin_v_i = std::stoi(value);
+        return new int(margin_v_i);
+    });
+
+    parser.parse(value.styles_format, value.token);
+
+    auto style_name = parser.get<std::string>(field::NAME);
     if (style_name.empty()) {
-        throw std::runtime_error(ass2srt::strutils::format("Empty style name at line %d (%s)", value.line_no, value.token));
+        throw std::runtime_error(strutils::format("Empty style name at line %d (%s)", value.line_no, value.token));
     }
-    value.styles_spec[style_name] = style;
+    auto alignment = parser.get<int>(field::ALIGNMENT);
+    auto margin_v = parser.get<int>(field::MARGIN_V);
+
+    value.styles_spec[style_name] = {static_cast<uint8_t>(alignment), margin_v};
 
     return STATE_PTR(StylesSectionState);
 }
 
 void StyleSpecState::output(ass_res_t &value)
 {
-    value.token = get_line_value(value.token);
+    value.token = ass::line::get_line_value(value.token);
+}
+
+// EventsSectionState
+std::unique_ptr<StateType> EventsSectionState::transition(ass_res_t &value)
+{
+    PARSERSTATE_HANDLE_DUMMY_LINE(EventsSectionState, value);
+    PARSERSTATE_HANDLE_SECTION_BREAK(value);
+
+    auto line_type = ass::line::parse_type(value.token);
+    switch (line_type) {
+    case line::FORMAT:
+        if (!value.events_format.empty()) {
+            throw std::runtime_error(strutils::format("Redeclaration of events section format at line %d (%s)", value.line_no, value.token));
+        }
+        return STATE_PTR(EventsFormatState);
+
+    case line::DIALOGUE:
+        return STATE_PTR(EventDialogueLineState);
+    
+    default:
+        return STATE_PTR(EventIgnoredLineState);
+    }
+}
+
+void EventsSectionState::output(ass_res_t &value)
+{
+    get_whole_line_token(value);
+}
+
+// EventsFormatState
+std::unique_ptr<StateType> EventsFormatState::transition(ass_res_t &value)
+{
+    value.events_format = ass::line::parse_format_declaration(value.token, {"Start", "End", "Text"});
+    return STATE_PTR(EventsSectionState);
+}
+
+void EventsFormatState::output(ass_res_t &value)
+{
+    value.token = ass::line::get_line_value(value.token);
+}
+
+// EventDialogueLineState
+std::unique_ptr<StateType> EventDialogueLineState::transition(ass_res_t &value)
+{
+    LineValuesParser parser;
+    
+    parser.on<long>(field::START, [](std::string &value) {
+        auto milis = ass::field::parse_time_millis(value);
+        return new long(milis);
+    });
+
+    parser.on<long>(field::END, [](std::string &value) {
+        auto milis = ass::field::parse_time_millis(value);
+        return new long(milis);
+    });
+
+    parser.on<std::string>(field::STYLE, [](std::string &value) {
+        return new std::string(value);
+    });
+
+    parser.on<int>(field::MARGIN_V, [](std::string &value) {
+        auto margin_v_i = std::stoi(value);
+        return new int(margin_v_i);
+    });
+
+    parser.on<std::list<ass_res_t::subline_part_t>>(field::TEXT, [](std::string &value) {
+        auto parts = new std::list<ass_res_t::subline_part_t>();
+        for (size_t part_begin = 0, part_end = 0; part_end + 1 < value.length();) {
+            part_end = value.find('{', part_begin + 1);
+            if (part_end == std::string::npos) {
+                part_end = value.length();
+            }
+            auto current_part = value.substr(part_begin, part_end - part_begin); // {\style}Text
+
+            ass_res_t::subline_part_t parsed_part {{0, -1}, ""};
+            if (current_part.at(0) == '{') {
+                auto style_end = current_part.find('}') + 1;
+                auto style_spec = current_part.substr(0, style_end); // {\style}
+                parsed_part.inline_style = ass::field::parse_inline_style(style_spec);
+                parsed_part.text = current_part.substr(style_end, current_part.length() - style_end); // Text
+            } else {
+                parsed_part.text = current_part; // Text
+            }
+            // TODO: Move to field namespace
+            strutils::replace_all(parsed_part.text, "\\N", "\n");
+
+            parts->push_back(parsed_part);
+            part_begin = part_end;
+        }
+
+        return parts;
+    });
+
+    parser.parse(value.events_format, value.token);
+
+    auto start_millis = parser.get<long>(field::START);
+    auto end_millis = parser.get<long>(field::END);
+    auto margin_v = parser.get<int>(field::MARGIN_V);
+    auto text_parts = parser.get<std::list<ass_res_t::subline_part_t>>(field::TEXT);
+
+    auto style_name = parser.get<std::string>(field::STYLE);
+    auto style_spec_it = value.styles_spec.find(style_name);
+    if (style_spec_it == value.styles_spec.end()) {
+        throw std::runtime_error(strutils::format("Style %s is not defined at line %d (%s)", style_name, value.line_no, value.token));
+    }
+    auto style = style_spec_it->second;
+
+    subline result {start_millis, end_millis, {}};
+    for (auto ass_part : text_parts) {
+        float v_pos = ass::vpos::calculate_vpos(value.v_size, margin_v, style, ass_part.inline_style);
+        result.parts.push_back({v_pos, ass_part.text});
+    }
+
+    value.result.push_back(result);
+
+    return STATE_PTR(EventsSectionState);
+}
+
+void EventDialogueLineState::output(ass_res_t &value)
+{
+    value.token = ass::line::get_line_value(value.token);
+}
+
+// EventIgnoredLineState
+std::unique_ptr<StateType> EventIgnoredLineState::transition(ass_res_t &)
+{
+    return STATE_PTR(EventsSectionState);
+}
+
+void EventIgnoredLineState::output(ass_res_t &)
+{
+    // We don't parse here anything so there is nothing to be done
 }
 
 // UnsupportedSectionState
 std::unique_ptr<StateType> UnsupportedSectionState::transition(ass_res_t &value)
 {
-    PARSERSTATE_HANDLE_DUMMY_LINE(ScriptInfoSectionState, value);
+    PARSERSTATE_HANDLE_DUMMY_LINE(UnsupportedSectionState, value);
     PARSERSTATE_HANDLE_SECTION_BREAK(value);
 
     return STATE_PTR(UnsupportedSectionState);

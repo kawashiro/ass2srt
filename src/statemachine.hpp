@@ -2,7 +2,6 @@
 #define _ASS2SRT_STATEMACHINE_H
 
 #include <memory>
-#include <stdint.h>
 
 namespace ass2srt::statemachine {
     /**
@@ -12,11 +11,6 @@ namespace ass2srt::statemachine {
     class State
     {
         public:
-        /**
-         * Unique id of the state
-         */
-        static const uint8_t id;
-
         /**
          * Get the next state
          */
@@ -43,8 +37,6 @@ namespace ass2srt::statemachine {
     class FinalState : public State<T>
     {
         public:
-        static const uint8_t id = UINT8_MAX;
-
         virtual std::unique_ptr<State<T>> transition(T &)
         {
             return std::make_unique<FinalState<T>>();

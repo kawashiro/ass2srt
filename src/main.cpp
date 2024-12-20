@@ -20,7 +20,7 @@ int main(int argc, char **argv)
     auto lines = ass::parse_ass_stream(input_file);
     for (auto line : lines) {
         for (auto part : line.parts) {
-            printf("%s\n", part.text.c_str());
+            printf("==>\n  %s\n", part.text.c_str());
         }
     }
 

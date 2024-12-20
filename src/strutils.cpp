@@ -6,7 +6,8 @@
 
 using namespace ass2srt;
 
-void strutils::ltrim(std::string &string) {
+void strutils::ltrim(std::string &string)
+{
     string.erase(
         string.begin(),
         std::find_if(
@@ -19,7 +20,8 @@ void strutils::ltrim(std::string &string) {
     );
 }
 
-void strutils::rtrim(std::string &string) {
+void strutils::rtrim(std::string &string)
+{
     string.erase(
         std::find_if(
             string.rbegin(), 
@@ -32,8 +34,16 @@ void strutils::rtrim(std::string &string) {
     );
 }
 
-void strutils::trim(std::string &string) {
+void strutils::trim(std::string &string)
+{
     strutils::rtrim(string);
     strutils::ltrim(string);
 }
 
+void strutils::replace_all(std::string &value, const std::string &search, const std::string &replacement)
+{
+    size_t pos = 0;
+    while ((pos = value.find(search, pos)) != std::string::npos) {
+        value.replace(pos, search.length(), replacement);
+    }
+}

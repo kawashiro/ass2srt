@@ -14,8 +14,11 @@ project(
 set(
     ASS2SRT_SOURCES
     src/ass.cpp
+    src/ass/field.cpp
+    src/ass/line.cpp
     src/ass/parserstate.cpp
     src/ass/section.cpp
+    src/ass/vpos.cpp
     src/argparser.cpp
     src/strutils.cpp
 )
@@ -29,7 +32,7 @@ add_executable(ass2srt ${ASS2SRT_SOURCES} src/main.cpp)
 configure_file(src/config.h.in src/config.h)
 target_include_directories(ass2srt PRIVATE "${PROJECT_BINARY_DIR}/src")
 add_compile_options(-Wall -Wextra -Wpedantic)
-string(APPEND CMAKE_CXX_FLAGS_DEBUG " -O0 -ggdb")
+string(APPEND CMAKE_CXX_FLAGS_DEBUG " -O0 -ggdb --coverage")
 
 add_executable(ass2srt_test ${ASS2SRT_SOURCES} ${ASS2SRT_TEST_SOURCES})
 target_include_directories(ass2srt_test PRIVATE src/)

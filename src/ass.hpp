@@ -8,7 +8,7 @@ namespace ass2srt::ass {
     /**
      * Parse input ASS data
      */
-    subtitles_t&& parse_ass_stream(std::istream &);
+    subtitles_t parse_ass_stream(std::istream &);
 }
 
 #endif
