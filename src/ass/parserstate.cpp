@@ -16,10 +16,6 @@
 using namespace ass2srt::ass::parserstate;
 
 typedef ass2srt::ass::section::Section Section;
-typedef ass2srt::ass::line::LineType LineType;
-typedef ass2srt::ass::field::FieldType FieldType;
-typedef ass2srt::ass::field::LineValuesParser LineValuesParser;
-typedef ass2srt::ass::field::styles_spec_t style_spec_t;
 
 #define PARSERSTATE_HANDLE_DUMMY_LINE(C, V)                    \
     do {                                                       \
@@ -181,7 +177,7 @@ void StylesFormatState::output(ass_res_t &value)
 // StyleSpecState
 std::unique_ptr<StateType> StyleSpecState::transition(ass_res_t &value)
 {
-    LineValuesParser parser;
+    field::LineValuesParser parser;
     
     parser.on<std::string>(field::NAME, [](std::string &value) {
         return new std::string(value);
@@ -209,7 +205,7 @@ std::unique_ptr<StateType> StyleSpecState::transition(ass_res_t &value)
     auto alignment = parser.get<int>(field::ALIGNMENT);
     auto margin_v = parser.get<int>(field::MARGIN_V);
 
-    value.styles_spec[style_name] = {static_cast<uint8_t>(alignment), margin_v};
+    value.styles_spec[style_name] = {static_cast<uint8_t>(alignment), margin_v, -1};
 
     return STATE_PTR(StylesSectionState);
 }
@@ -261,7 +257,7 @@ void EventsFormatState::output(ass_res_t &value)
 // EventDialogueLineState
 std::unique_ptr<StateType> EventDialogueLineState::transition(ass_res_t &value)
 {
-    LineValuesParser parser;
+    field::LineValuesParser parser;
     
     parser.on<long>(field::START, [](std::string &value) {
         auto milis = ass::field::parse_time_millis(value);
@@ -291,17 +287,15 @@ std::unique_ptr<StateType> EventDialogueLineState::transition(ass_res_t &value)
             }
             auto current_part = value.substr(part_begin, part_end - part_begin); // {\style}Text
 
-            ass_res_t::subline_part_t parsed_part {{0, -1}, ""};
+            ass_res_t::subline_part_t parsed_part;
             if (current_part.at(0) == '{') {
                 auto style_end = current_part.find('}') + 1;
                 auto style_spec = current_part.substr(0, style_end); // {\style}
                 parsed_part.inline_style = ass::field::parse_inline_style(style_spec);
-                parsed_part.text = current_part.substr(style_end, current_part.length() - style_end); // Text
+                parsed_part.text = field::parse_plain_text(current_part.substr(style_end, current_part.length() - style_end)); // Text
             } else {
-                parsed_part.text = current_part; // Text
+                parsed_part.text = field::parse_plain_text(current_part); // Text
             }
-            // TODO: Move to field namespace
-            strutils::replace_all(parsed_part.text, "\\N", "\n");
 
             parts->push_back(parsed_part);
             part_begin = part_end;

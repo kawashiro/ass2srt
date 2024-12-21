@@ -19,20 +19,6 @@
         void output(ass_res_t &value);                                   \
     }
 
-// Text align calculation
-#define ALIGN_LEFT 1
-#define ALIGN_CENTER 2
-#define ALIGN_RIGHT 3
-
-#define ALIGN_BOTTOM 0
-#define ALIGN_MIDDLE 8
-#define ALIGN_TOP 4
-
-#define ALIGN(Y, X) ((Y) + (X))
-#define ALIGN_VALID(VAL) ((VAL) >= ALIGN(ALIGN_BOTTOM, ALIGN_LEFT) && (VAL) <= ALIGN(ALIGN_MIDDLE, ALIGN_RIGHT))
-
-#define ALIGN_DEFAULT ALIGN(ALIGN_BOTTOM, ALIGN_CENTER)
-
 namespace ass2srt::ass::parserstate {
     /**
      * Intermediate parsing result

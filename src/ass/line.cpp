@@ -36,25 +36,17 @@ std::string line::get_line_value(std::string &input)
 
 std::list<field::FieldType> line::parse_format_declaration(std::string &input, std::set<std::string> required_fields)
 {
+    auto str_parts = strutils::split(input, ',');
+
     std::list<field::FieldType> fields;
-    size_t pos = 0;
-    std::string token;
     std::set<std::string>::iterator t_pos;
-    while ((pos = input.find(',')) != std::string::npos) {
-        token = input.substr(0, pos);
-        strutils::trim(token);
-        if ((t_pos = required_fields.find(token)) != required_fields.end()) {
+    for (auto part : str_parts) {
+        if ((t_pos = required_fields.find(part)) != required_fields.end()) {
             required_fields.erase(t_pos);
         }
-        auto field_v = field::parse_type(token);
+        auto field_v = field::parse_type(part);
         fields.push_back(field_v);
-        input.erase(0, pos + 1);
     }
-    strutils::trim(input);
-    if ((t_pos = required_fields.find(input)) != required_fields.end()) {
-        required_fields.erase(t_pos);
-    }
-    fields.push_back(field::parse_type(input));
 
     if (!required_fields.empty()) {
         throw std::runtime_error("Not all required fields found in the format definition");

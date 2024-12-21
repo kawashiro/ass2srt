@@ -7,6 +7,24 @@
 #include <string>
 #include "../strutils.hpp"
 
+// Text align calculation
+#define ALIGN_LEFT 1
+#define ALIGN_CENTER 2
+#define ALIGN_RIGHT 3
+
+#define ALIGN_BOTTOM 0
+#define ALIGN_MIDDLE 8
+#define ALIGN_TOP 4
+
+#define ALIGN(Y, X) ((Y) + (X))
+#define ALIGN_VALID(VAL) ((VAL) >= ALIGN(ALIGN_BOTTOM, ALIGN_LEFT) && (VAL) <= ALIGN(ALIGN_MIDDLE, ALIGN_RIGHT))
+
+#define ALIGN_IS_BOTTOM(VAL) ((VAL) < ALIGN_TOP)
+#define ALIGN_IS_MIDDLE(VAL) ((VAL) > ALIGN_MIDDLE)
+#define ALIGN_IS_TOP(VAL) ((VAL) > ALIGN_TOP && (VAL) < ALIGN_MIDDLE)
+
+#define ALIGN_DEFAULT ALIGN(ALIGN_BOTTOM, ALIGN_CENTER)
+
 namespace ass2srt::ass::field {
     /**
      * Possible fields in the sections
@@ -45,6 +63,11 @@ namespace ass2srt::ass::field {
     struct styles_spec_t {
         uint8_t alignment;
         int margin_v;
+        int explicit_y_pos;
+        explicit styles_spec_t();
+        styles_spec_t(uint8_t alignment, int margin_v, int explicit_v_pos);
+        styles_spec_t(const styles_spec_t &);
+        styles_spec_t& operator =(const styles_spec_t &);
     };
 
     /**
@@ -74,6 +97,11 @@ namespace ass2srt::ass::field {
      * Parse ASS text inline styles
      */
     styles_spec_t parse_inline_style(std::string &);
+
+    /**
+     * Parse ergular text value from dialogue line
+     */
+    std::string parse_plain_text(std::string);
 
     /**
      * Line parser

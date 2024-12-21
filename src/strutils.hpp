@@ -2,6 +2,7 @@
 #define _ASS2SRT_STRUTILS_H
 
 #include <exception>
+#include <list>
 #include <memory>
 #include <string>
 
@@ -25,6 +26,11 @@ namespace ass2srt::strutils {
      * Replace all the occurences of the string
      */
     void replace_all(std::string &, const std::string &, const std::string &);
+
+    /**
+     * Split string into parts
+     */
+    std::list<std::string> split(std::string, const char);
 
     /**
      * Safely format the string

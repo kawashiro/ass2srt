@@ -1,5 +1,6 @@
 #include <algorithm> 
 #include <cctype>
+#include <list>
 #include <locale>
 #include <string>
 #include "strutils.hpp"
@@ -46,4 +47,21 @@ void strutils::replace_all(std::string &value, const std::string &search, const 
     while ((pos = value.find(search, pos)) != std::string::npos) {
         value.replace(pos, search.length(), replacement);
     }
+}
+
+std::list<std::string> strutils::split(std::string input, const char delimiter)
+{
+    std::list<std::string> parts;
+    size_t pos = 0;
+    std::string token;
+    while ((pos = input.find(delimiter)) != std::string::npos) {
+        token = input.substr(0, pos);
+        strutils::trim(token);
+        parts.push_back(token);
+        input.erase(0, pos + 1);
+    }
+    strutils::trim(input);
+    parts.push_back(input);
+
+    return parts;
 }
