@@ -9,16 +9,16 @@
 using namespace ass2srt;
 
 #define ASSERT_THROW_MSG(EXPR, EXC_CLS, MSG) \
-do { \
-    try { \
-        (EXPR); \
-        FAIL() << "Exception " << #EXC_CLS << " was not thrown"; \
-    } catch (const EXC_CLS &e) { \
-        ASSERT_EQ(std::string(e.what()), std::string(MSG)) << "Exception message did not match"; \
-    } catch (...) { \
-        FAIL() << "Exception other than " << #EXC_CLS << " was thrown"; \
-    } \
-} while (0);
+    do { \
+        try { \
+            (EXPR); \
+            FAIL() << "Exception " << #EXC_CLS << " was not thrown"; \
+        } catch (const EXC_CLS &e) { \
+            ASSERT_EQ(std::string(e.what()), std::string(MSG)) << "Exception message did not match"; \
+        } catch (...) { \
+            FAIL() << "Exception other than " << #EXC_CLS << " was thrown"; \
+        } \
+    } while (0);
 
 static const char *good_file_content = (
     "\xEF\xBB\xBF[Script Info]\n"
