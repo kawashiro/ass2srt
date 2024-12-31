@@ -13,17 +13,18 @@
 #define ALIGN_RIGHT 3
 
 #define ALIGN_BOTTOM 0
-#define ALIGN_MIDDLE 8
-#define ALIGN_TOP 4
+#define ALIGN_MIDDLE 3
+#define ALIGN_TOP 6
 
 #define ALIGN(Y, X) ((Y) + (X))
-#define ALIGN_VALID(VAL) ((VAL) >= ALIGN(ALIGN_BOTTOM, ALIGN_LEFT) && (VAL) <= ALIGN(ALIGN_MIDDLE, ALIGN_RIGHT))
 
-#define ALIGN_IS_BOTTOM(VAL) ((VAL) < ALIGN_TOP)
-#define ALIGN_IS_MIDDLE(VAL) ((VAL) > ALIGN_MIDDLE)
-#define ALIGN_IS_TOP(VAL) ((VAL) > ALIGN_TOP && (VAL) < ALIGN_MIDDLE)
+#define ALIGN_IS_BOTTOM(VAL) ((VAL) >= ALIGN(ALIGN_BOTTOM, ALIGN_LEFT) && (VAL) <= ALIGN(ALIGN_BOTTOM, ALIGN_RIGHT))
+#define ALIGN_IS_MIDDLE(VAL) ((VAL) >= ALIGN(ALIGN_MIDDLE, ALIGN_LEFT) && (VAL) <= ALIGN(ALIGN_MIDDLE, ALIGN_RIGHT))
+#define ALIGN_IS_TOP(VAL) ((VAL) >= ALIGN(ALIGN_TOP, ALIGN_LEFT) && (VAL) <= ALIGN(ALIGN_TOP, ALIGN_RIGHT))
 
-#define ALIGN_DEFAULT ALIGN(ALIGN_BOTTOM, ALIGN_CENTER)
+#define ALIGN_DEFAULT ALIGN(ALIGN_MIDDLE, ALIGN_CENTER)
+
+#define ALIGN_VALID(VAL) (ALIGN_IS_BOTTOM(VAL) || ALIGN_IS_MIDDLE(VAL) || ALIGN_IS_TOP(VAL))
 
 namespace ass2srt::ass::field {
     /**
@@ -86,22 +87,22 @@ namespace ass2srt::ass::field {
     /**
      * Parse the field definition
      */
-    FieldType parse_type(std::string &);
+    FieldType parse_type(const std::string &);
 
     /**
      * Parse ASS time string
      */
-    long parse_time_millis(std::string &);
+    long parse_time_millis(const std::string &);
 
     /**
      * Parse ASS text inline styles
      */
-    styles_spec_t parse_inline_style(std::string &);
+    styles_spec_t parse_inline_style(const std::string &);
 
     /**
      * Parse ergular text value from dialogue line
      */
-    std::string parse_plain_text(std::string);
+    std::string parse_plain_text(const std::string);
 
     /**
      * Line parser
@@ -120,7 +121,7 @@ namespace ass2srt::ass::field {
          * Add parsing function for a field
          */
         template<typename T>
-        void on(FieldType field_type, T *(*parser_fn)(std::string &))
+        void on(const FieldType field_type, T *(*parser_fn)(std::string &))
         {
             this->parsers[field_type] = reinterpret_cast<void *(*)(std::string &)>(parser_fn);
             this->dealloc[field_type] = [](void *ptr) { delete (T*)ptr; };
@@ -129,16 +130,23 @@ namespace ass2srt::ass::field {
         /**
          * Parse the line
          */
-        void parse(std::list<field::FieldType> &, std::string &);
+        void parse(const std::list<field::FieldType> &, const std::string &);
 
         /**
          * Ge the parsed value
          */
         template<typename T>
-        T get(FieldType field)
+        T get(const FieldType field) const
         {
             if (this->result[field] == nullptr) {
-                throw std::invalid_argument(strutils::format("Field 0x%x is not parsed", field));
+                auto field_name = strutils::format("0x%x", field);
+                for (auto fld : fields_list) {
+                    if (fld.id == field) {
+                        field_name = std::string(fld.definition);
+                        break;
+                    }
+                }
+                throw std::invalid_argument(strutils::format("Field %s is not parsed", field_name.c_str()));
             }
             return *(T*)(this->result[field]);
         }

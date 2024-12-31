@@ -4,7 +4,7 @@
 
 using namespace ass2srt::ass;
 
-section::Section section::parse(std::string &value)
+section::Section section::parse(const std::string &value)
 {
     if (value.length() < 3 || value[0] != '[' || value[value.length() - 1] != ']') {
         throw std::invalid_argument("Invalid section declaration");

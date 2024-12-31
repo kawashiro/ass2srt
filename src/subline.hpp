@@ -18,6 +18,11 @@ namespace ass2srt {
          * Inner text
          */
         std::string text;
+
+        /**
+         * Compare parts
+         */
+        bool operator ==(const subline_part &) const;
     };
 
     /**
@@ -38,6 +43,11 @@ namespace ass2srt {
          * Ordered text parts
          */
         std::list<subline_part> parts;
+
+        /**
+         * Compare lines
+         */
+        bool operator ==(const subline &) const;
     };
 
     typedef std::list<subline> subtitles_t;

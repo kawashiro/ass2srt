@@ -49,17 +49,17 @@ namespace ass2srt::ass::line {
     /**
      * Parse the line type definition
      */
-    LineType parse_type(std::string &);
+    LineType parse_type(const std::string &);
 
     /**
      * Get line value (w/o type)
      */
-    std::string get_line_value(std::string &);
+    std::string get_line_value(const std::string &);
 
     /**
      * Parse section format line
      */
-    std::list<field::FieldType> parse_format_declaration(std::string &, std::set<std::string>);
+    std::list<field::FieldType> parse_format_declaration(const std::string &, const std::set<std::string>);
 }
 
 #endif

@@ -45,7 +45,7 @@ namespace ass2srt::ass::section {
     /**
      * Parse the section definition
      */
-    Section parse(std::string &);
+    Section parse(const std::string &);
 }
 
 #endif

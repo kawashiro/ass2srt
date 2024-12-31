@@ -15,8 +15,8 @@
     class NAME : public StateType                                        \
     {                                                                    \
         public:                                                          \
-        virtual std::unique_ptr<StateType> transition(ass_res_t &value); \
-        void output(ass_res_t &value);                                   \
+        virtual std::unique_ptr<StateType> transition(ass_res_t &value) override; \
+        void output(ass_res_t &value) override;                                   \
     }
 
 namespace ass2srt::ass::parserstate {

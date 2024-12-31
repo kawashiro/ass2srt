@@ -17,18 +17,18 @@ using namespace ass2srt::ass;
         }                                          \
     } while (0)
 
-static inline std::string col_value(std::string &input, size_t pos)
+static inline std::string col_value(const std::string &input, const size_t pos)
 {
     return input.substr(pos, input.find(',', pos) - pos);
 }
 
-static inline std::string text_col_value(std::string &input, size_t pos)
+static inline std::string text_col_value(const std::string &input, const size_t pos)
 {
     return input.substr(pos, input.length() - pos);
 }
 
 template<typename T>
-static inline T get_list_el(std::list<T> &list, int pos)
+static inline T get_list_el(const std::list<T> &list, const int pos)
 {
     auto it = list.begin();
     for (int i = pos; i > 0; --i) {
@@ -44,18 +44,18 @@ field::styles_spec_t::styles_spec_t():
 {
 }
 
-field::styles_spec_t::styles_spec_t(uint8_t alignment, int margin_v, int explicit_y_pos)
+field::styles_spec_t::styles_spec_t(uint8_t alignment, int margin_v, int explicit_y_pos):
+    alignment(alignment),
+    margin_v(margin_v),
+    explicit_y_pos(explicit_y_pos)
 {
-    this->alignment = alignment;
-    this->margin_v = margin_v;
-    this->explicit_y_pos = explicit_y_pos;
 }
 
-field::styles_spec_t::styles_spec_t(const field::styles_spec_t &value)
+field::styles_spec_t::styles_spec_t(const field::styles_spec_t &value):
+    alignment(value.alignment),
+    margin_v(value.margin_v),
+    explicit_y_pos(value.explicit_y_pos)
 {
-    this->alignment = value.alignment;
-    this->margin_v = value.margin_v;
-    this->explicit_y_pos = value.explicit_y_pos;
 }
 
 field::styles_spec_t& field::styles_spec_t::operator =(const field::styles_spec_t &value)
@@ -66,7 +66,7 @@ field::styles_spec_t& field::styles_spec_t::operator =(const field::styles_spec_
     return *this;
 }
 
-field::FieldType field::parse_type(std::string &value)
+field::FieldType field::parse_type(const std::string &value)
 {
     for (auto field : fields_list) {
         if (value == field.definition) {
@@ -77,7 +77,7 @@ field::FieldType field::parse_type(std::string &value)
     return UNKNOWN;
 }
 
-long field::parse_time_millis(std::string &time_s)
+long field::parse_time_millis(const std::string &time_s)
 {
     unsigned int hours;
     unsigned int minutes;
@@ -92,14 +92,17 @@ long field::parse_time_millis(std::string &time_s)
     return millis * 10 + seconds * 1000 + minutes * 60 * 1000 + hours * 60 * 60 * 1000;
 }
 
-field::styles_spec_t field::parse_inline_style(std::string &value)
+field::styles_spec_t field::parse_inline_style(const std::string &value)
 {
     field::styles_spec_t result;
 
     auto styles = strutils::split(value.substr(1, value.length() - 2), '\\');
     for (auto style_ptr = ++styles.begin(); style_ptr != styles.end(); ++style_ptr) {
         int alignment;
-        if (std::sscanf(value.c_str(), "a%d", &alignment) == 1) {
+        if (std::sscanf(style_ptr->c_str(), "a%d", &alignment) == 1) {
+            if(!ALIGN_VALID(alignment)) {
+                throw std::invalid_argument(strutils::format("Invalid alignment %d", alignment));
+            }
             result.alignment = alignment;
             continue;
         }
@@ -131,7 +134,7 @@ field::styles_spec_t field::parse_inline_style(std::string &value)
             } else {
                 auto y_begin = std::stoi(get_list_el(args_list, 1));
                 auto y_end = std::stoi(get_list_el(args_list, 3));
-                result.explicit_y_pos = std::round(std::abs(y_begin - y_end) / 2.0);
+                result.explicit_y_pos = std::round((y_begin + y_end) / 2.0);
             }
         }
     }
@@ -139,10 +142,11 @@ field::styles_spec_t field::parse_inline_style(std::string &value)
     return result;
 }
 
-std::string field::parse_plain_text(std::string value)
+std::string field::parse_plain_text(const std::string value)
 {
-    strutils::replace_all(value, "\\N", "\n");
-    return value;
+    std::string out = value;
+    strutils::replace_all(out, "\\N", "\n");
+    return out;
 }
 
 field::LineValuesParser::LineValuesParser()
@@ -152,7 +156,7 @@ field::LineValuesParser::LineValuesParser()
     std::memset(this->dealloc, 0, sizeof(size_t) * (UNKNOWN + 1));
 }
 
-void field::LineValuesParser::parse(std::list<field::FieldType> &format, std::string &input_value)
+void field::LineValuesParser::parse(const std::list<field::FieldType> &format, const std::string &input_value)
 {
     size_t str_pos = 0;
     for (auto field : format) {

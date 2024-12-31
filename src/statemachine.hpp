@@ -37,16 +37,16 @@ namespace ass2srt::statemachine {
     class FinalState : public State<T>
     {
         public:
-        virtual std::unique_ptr<State<T>> transition(T &)
+        virtual std::unique_ptr<State<T>> transition(T &) override
         {
             return std::make_unique<FinalState<T>>();
         };
 
-        virtual void output(T &)
+        virtual void output(T &) override
         {
         }
 
-        inline virtual bool final() const
+        inline virtual bool final() const override
         {
             return true;
         }

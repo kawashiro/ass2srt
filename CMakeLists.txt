@@ -21,11 +21,19 @@ set(
     src/ass/vpos.cpp
     src/argparser.cpp
     src/strutils.cpp
+    src/subline.cpp
 )
 set(
     ASS2SRT_TEST_SOURCES
+    tests/ass_field_test.cpp
+    tests/ass_line_test.cpp
+    tests/ass_section_test.cpp
+    tests/ass_vpos_test.cpp
     tests/ass_test.cpp
     tests/argparser_test.cpp
+    tests/statemachine_test.cpp
+    tests/strutils_test.cpp
+    tests/subline_test.cpp
 )
 
 add_executable(ass2srt ${ASS2SRT_SOURCES} src/main.cpp)

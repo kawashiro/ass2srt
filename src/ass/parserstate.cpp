@@ -44,7 +44,7 @@ static void get_whole_line_token(ass_res_t &value)
 {
     std::string line;
     if (std::getline(value.istream, line)) {
-        if (std::memcmp(line.c_str(), bom, 3) == 0) {
+        if (value.line_no == 0 && std::memcmp(line.c_str(), bom, 3) == 0) {
             line.erase(0, 3);
         }
         ass2srt::strutils::trim(line);
@@ -56,7 +56,7 @@ static void get_whole_line_token(ass_res_t &value)
     }
 }
 
-static std::unique_ptr<StateType> get_state_for_section(Section section)
+static std::unique_ptr<StateType> get_state_for_section(const Section section)
 {
     std::unique_ptr<StateType> res;
 
@@ -98,12 +98,8 @@ std::unique_ptr<StateType> InitialState::transition(ass_res_t &value)
 {
     PARSERSTATE_HANDLE_DUMMY_LINE(InitialState, value);
 
-    try {
-        auto section = ass::section::parse(value.token);
-        return get_state_for_section(section);
-    } catch (const std::invalid_argument &e) {
-        throw std::runtime_error(strutils::format("%s at line %d (%s)", e.what(), value.line_no, value.token));
-    }
+    auto section = ass::section::parse(value.token);
+    return get_state_for_section(section);
 }
 
 void InitialState::output(ass_res_t &value)
@@ -145,7 +141,7 @@ std::unique_ptr<StateType> StylesSectionState::transition(ass_res_t &value)
     switch (line_type) {
     case line::FORMAT:
         if (!value.styles_format.empty()) {
-            throw std::runtime_error(strutils::format("Redeclaration of styles section format at line %d (%s)", value.line_no, value.token));
+            throw std::invalid_argument("Redeclaration of styles section format");
         }
         return STATE_PTR(StylesFormatState);
 
@@ -153,7 +149,7 @@ std::unique_ptr<StateType> StylesSectionState::transition(ass_res_t &value)
         return STATE_PTR(StyleSpecState);
     
     default:
-        throw std::runtime_error(strutils::format("Invalid styles line type at line %d (%s)", value.line_no, value.token));
+        throw std::invalid_argument("Invalid styles line type");
     }
 }
 
@@ -186,7 +182,7 @@ std::unique_ptr<StateType> StyleSpecState::transition(ass_res_t &value)
     parser.on<int>(field::ALIGNMENT, [](std::string &value) {
         auto alignment_i = std::stoi(value);
         if (!ALIGN_VALID(alignment_i)) {
-            throw std::runtime_error(strutils::format("Invalid alignment %s", value));
+            throw std::invalid_argument(strutils::format("Invalid alignment %s", value.c_str()));
         }
         return new int(alignment_i);
     });
@@ -200,7 +196,7 @@ std::unique_ptr<StateType> StyleSpecState::transition(ass_res_t &value)
 
     auto style_name = parser.get<std::string>(field::NAME);
     if (style_name.empty()) {
-        throw std::runtime_error(strutils::format("Empty style name at line %d (%s)", value.line_no, value.token));
+        throw std::invalid_argument("Empty style name");
     }
     auto alignment = parser.get<int>(field::ALIGNMENT);
     auto margin_v = parser.get<int>(field::MARGIN_V);
@@ -225,7 +221,7 @@ std::unique_ptr<StateType> EventsSectionState::transition(ass_res_t &value)
     switch (line_type) {
     case line::FORMAT:
         if (!value.events_format.empty()) {
-            throw std::runtime_error(strutils::format("Redeclaration of events section format at line %d (%s)", value.line_no, value.token));
+            throw std::invalid_argument("Redeclaration of events section format");
         }
         return STATE_PTR(EventsFormatState);
 
@@ -314,7 +310,7 @@ std::unique_ptr<StateType> EventDialogueLineState::transition(ass_res_t &value)
     auto style_name = parser.get<std::string>(field::STYLE);
     auto style_spec_it = value.styles_spec.find(style_name);
     if (style_spec_it == value.styles_spec.end()) {
-        throw std::runtime_error(strutils::format("Style %s is not defined at line %d (%s)", style_name, value.line_no, value.token));
+        throw std::invalid_argument(strutils::format("Style %s is not defined", style_name.c_str()));
     }
     auto style = style_spec_it->second;
 

@@ -7,7 +7,7 @@ namespace ass2srt::ass::vpos {
     /**
      * Calculate vertical position for all the styles applied
      */
-    float calculate_vpos(int v_size, int line_margin_v, field::styles_spec_t &line_style, field::styles_spec_t &inline_style);
+    float calculate_vpos(const int, const int, const field::styles_spec_t &, const field::styles_spec_t &);
 }
 
 #endif
