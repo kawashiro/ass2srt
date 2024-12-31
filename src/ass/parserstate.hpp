@@ -11,10 +11,10 @@
 #include "../statemachine.hpp"
 #include "../subline.hpp"
 
-#define PARSER_STATE_CLASS_DECL(NAME)                                    \
-    class NAME : public StateType                                        \
-    {                                                                    \
-        public:                                                          \
+#define PARSER_STATE_CLASS_DECL(NAME)                                             \
+    class NAME : public StateType                                                 \
+    {                                                                             \
+        public:                                                                   \
         virtual std::unique_ptr<StateType> transition(ass_res_t &value) override; \
         void output(ass_res_t &value) override;                                   \
     }
