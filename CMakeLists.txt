@@ -8,7 +8,7 @@ project(
     ass2srt
     VERSION 0.0.1
     DESCRIPTION "Convert ASS subtitles toi SRT format easily keeping readability as much as possible"
-    HOMEPAGE_URL "https://example.com/"
+    HOMEPAGE_URL "https://github.com/kawashiro/ass2srt"
 )
 
 set(
