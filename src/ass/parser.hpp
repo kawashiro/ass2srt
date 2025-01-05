@@ -19,7 +19,7 @@
         void output(ass_res_t &value) override;                                   \
     }
 
-namespace ass2srt::ass::parserstate {
+namespace ass2srt::ass::parser {
     /**
      * Intermediate parsing result
      */

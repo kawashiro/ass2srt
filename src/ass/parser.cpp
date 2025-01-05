@@ -6,14 +6,14 @@
 #include <stdexcept>
 #include <stdio.h>
 #include <string>
-#include "parserstate.hpp"
+#include "parser.hpp"
 #include "field.hpp"
 #include "line.hpp"
 #include "section.hpp"
 #include "vpos.hpp"
 #include "../strutils.hpp"
 
-using namespace ass2srt::ass::parserstate;
+using namespace ass2srt::ass::parser;
 
 typedef ass2srt::ass::section::Section Section;
 

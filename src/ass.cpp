@@ -2,7 +2,7 @@
 #include <stdexcept>
 #include <string>
 #include "ass.hpp"
-#include "ass/parserstate.hpp"
+#include "ass/parser.hpp"
 #include "strutils.hpp"
 #include "subline.hpp"
 
@@ -12,11 +12,11 @@ subtitles_t ass::parse_ass_stream(std::istream &input)
 {
     subtitles_t subtitles;
 
-    ass::parserstate::ass_res_t value(input, subtitles);
-    auto initial_state = new ass::parserstate::InitialState();
+    ass::parser::ass_res_t value(input, subtitles);
+    auto initial_state = new ass::parser::InitialState();
 
     try {
-        statemachine::run<ass::parserstate::ass_res_t>(initial_state, value);
+        statemachine::run<ass::parser::ass_res_t>(initial_state, value);
     } catch (const std::invalid_argument &e) {
         throw std::runtime_error(strutils::format("ASS parser error at line %d: %s", value.line_no, e.what()));
     }

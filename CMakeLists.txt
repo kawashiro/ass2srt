@@ -16,10 +16,11 @@ set(
     src/ass.cpp
     src/ass/field.cpp
     src/ass/line.cpp
-    src/ass/parserstate.cpp
+    src/ass/parser.cpp
     src/ass/section.cpp
     src/ass/vpos.cpp
     src/argparser.cpp
+    src/merge.cpp
     src/strutils.cpp
     src/subline.cpp
 )
@@ -31,6 +32,7 @@ set(
     tests/ass_vpos_test.cpp
     tests/ass_test.cpp
     tests/argparser_test.cpp
+    tests/merge_test.cpp
     tests/statemachine_test.cpp
     tests/strutils_test.cpp
     tests/subline_test.cpp
