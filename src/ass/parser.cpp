@@ -80,13 +80,17 @@ static std::unique_ptr<StateType> get_state_for_section(const Section section)
     return res;
 }
 
-ass_res_t::ass_res_t(std::istream &istream_, subtitles_t &result_):
-    istream(istream_),
-    result(result_),
+ass_res_t::ass_res_t(std::istream &istream,subtitles_t &result, const std::set<std::string> &styles_scope,
+    const std::set<std::string> &excluded_styles, const bool exclude_signs):
+    istream(istream),
+    result(result),
     token(""),
     styles_format({}),
     events_format({}),
     styles_spec({}),
+    styles_scope(styles_scope),
+    excluded_styles(excluded_styles),
+    exclude_signs(exclude_signs),
     v_size(-1),
     line_no(0),
     eof(false)
@@ -318,6 +322,17 @@ std::unique_ptr<StateType> EventDialogueLineState::transition(ass_res_t &value)
     for (auto ass_part : text_parts) {
         float v_pos = ass::vpos::calculate_vpos(value.v_size, margin_v, style, ass_part.inline_style);
         result.parts.push_back({v_pos, ass_part.text});
+    }
+
+    // Styles-based filtering
+    if (!value.styles_scope.empty() && !value.styles_scope.contains(style_name)) {
+        return STATE_PTR(EventsSectionState);
+    }
+    if (!value.excluded_styles.empty() && value.excluded_styles.contains(style_name)) {
+        return STATE_PTR(EventsSectionState);
+    }
+    if (value.exclude_signs && (style_name.contains("sign") || style_name.contains("Sign"))) {
+        return STATE_PTR(EventsSectionState);
     }
 
     value.result.push_back(result);

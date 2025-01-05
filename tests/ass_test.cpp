@@ -5,6 +5,7 @@
 #include <string.h>
 #include <gtest/gtest.h>
 #include "ass.hpp"
+#include "strutils.hpp"
 
 using namespace ass2srt;
 
@@ -91,8 +92,29 @@ static const char *events_style_undefined_file_content = (
     "[Events]\n"
     "Format: Start, End, Style, MarginV, Text\n"
     "Dialogue: 0:00:00.14,0:00:04.60,UnknownStyle,0,Some text...\n"
-    "Format: Start, End, Style, MarginV, Text\n"
     "Dialogue: 0:00:00.14,0:00:04.60,Signs,0,Some text #2...\n"
+);
+
+static const char *events_exclude_signs_content = (
+    "[V4+ Styles]\n"
+    "Format: Name, Fontname, Fontsize, Alignment, MarginV\n"
+    "Style: Signs,a_FuturaRound,48,2,5\n"
+    "Style: Default,a_FuturaRound,48,2,0\n"
+    "[Events]\n"
+    "Format: Start, End, Style, MarginV, Text\n"
+    "Dialogue: 0:00:00.00,0:00:01.00,Default,0,Some text...\n"
+    "Dialogue: 0:00:00.14,0:00:04.60,Signs,0,Some text #2...\n"
+);
+
+static const char *events_exclude_styles_content = (
+    "[V4+ Styles]\n"
+    "Format: Name, Fontname, Fontsize, Alignment, MarginV\n"
+    "Style: StyleA,a_FuturaRound,48,2,5\n"
+    "Style: StyleB,a_FuturaRound,48,2,5\n"
+    "[Events]\n"
+    "Format: Start, End, Style, MarginV, Text\n"
+    "Dialogue: 0:00:00.00,0:00:01.00,StyleA,0,Some text...\n"
+    "Dialogue: 0:00:00.14,0:00:04.60,StyleB,0,Some text #2...\n"
 );
 
 static const subtitles_t good_file_result {
@@ -126,6 +148,45 @@ static const subtitles_t good_file_result {
     },
 };
 
+static const subtitles_t excluded_signs_result {
+    {
+        0,
+        1000,
+        {
+            {
+                0.0,
+                "Some text...",
+            },
+        },
+    }
+};
+
+static const subtitles_t leave_only_styles_result {
+    {
+        140,
+        4600,
+        {
+            {
+                0.0,
+                "Some text #2...",
+            },
+        },
+    }
+};
+
+static const subtitles_t exclude_styles_result {
+    {
+        0,
+        1000,
+        {
+            {
+                0.0,
+                "Some text...",
+            },
+        },
+    }
+};
+
 static std::ispanstream c_str_to_stream(const char *input)
 {
     size_t size = strlen(input);
@@ -134,36 +195,10 @@ static std::ispanstream c_str_to_stream(const char *input)
     return std::ispanstream(input_span);
 }
 
-static std::string subtitles_to_string(const subtitles_t &subtitles)
-{
-    const std::string indent("    ");
-    const std::string indent2 = indent + indent;
-    const std::string indent3 = indent2 + indent;
-    const std::string indent4 = indent3 + indent;
-
-    std::string output("{\n");
-    for (auto subline : subtitles) {
-        output += indent + "{\n";
-        output += indent2 + std::to_string(subline.start_milis) + ",\n";
-        output += indent2 + std::to_string(subline.end_milis) + ",\n";
-        output += indent2 + "{\n";
-        for (auto part : subline.parts) {
-            output += indent3 + "{\n";
-            output += indent4 + std::to_string(part.v_pos) + ",\n";
-            output += indent4 + "\"" + part.text + "\",\n";
-            output += indent3 + "},\n";
-        }
-        output += indent2 + "},\n";
-        output += indent + "},\n";
-    }
-    output += "}";
-    return output;
-}
-
 TEST(ass, test_parse_file_normal) {
     auto test_file = c_str_to_stream(good_file_content);
     auto res = ass::parse_ass_stream(test_file);
-    ASSERT_EQ(res, good_file_result) << "Subtitles did not match. Actual result: " << subtitles_to_string(res);
+    ASSERT_EQ(res, good_file_result) << "Subtitles did not match. Actual result: " << strutils::subtitles_to_string(res);
 }
 
 TEST(ass, test_parse_file_with_styles_format_redeclared) {
@@ -194,4 +229,22 @@ TEST(ass, test_parse_file_with_events_format_redeclared) {
 TEST(ass, test_parse_file_with_undefined_style) {
     auto test_file = c_str_to_stream(events_style_undefined_file_content);
     ASSERT_THROW_MSG(ass::parse_ass_stream(test_file), std::runtime_error, "ASS parser error at line 6: Style UnknownStyle is not defined");
+}
+
+TEST(ass, test_parse_file_exclude_signs) {
+    auto test_file = c_str_to_stream(events_exclude_signs_content);
+    auto res = ass::parse_ass_stream(test_file, {}, {}, true);
+    ASSERT_EQ(res, excluded_signs_result) << "Subtitles did not match. Actual result: " << strutils::subtitles_to_string(res);
+}
+
+TEST(ass, test_parse_file_leave_only_styles) {
+    auto test_file = c_str_to_stream(events_exclude_styles_content);
+    auto res = ass::parse_ass_stream(test_file, {"StyleB"}, {}, false);
+    ASSERT_EQ(res, leave_only_styles_result) << "Subtitles did not match. Actual result: " << strutils::subtitles_to_string(res);
+}
+
+TEST(ass, test_parse_file_exclude_styles) {
+    auto test_file = c_str_to_stream(events_exclude_styles_content);
+    auto res = ass::parse_ass_stream(test_file, {}, {"StyleB"}, false);
+    ASSERT_EQ(res, exclude_styles_result) << "Subtitles did not match. Actual result: " << strutils::subtitles_to_string(res);
 }

@@ -25,6 +25,13 @@ struct merged_lines_t : std::map<long, merged_line_t>
         insert0(line);
 
         auto current_line = line;
+        std::list<merged_line_t> fully_shadowed_lines;
+        for (auto it = ++this->find(current_line.start_millis); it != this->end(); ++it) {
+            if (it->second.start_millis < current_line.start_millis || it->second.end_millis > current_line.end_millis) {
+                continue;
+            }
+            fully_shadowed_lines.push_back(it->second);
+        }
 
         auto prev_line_it = this->find(current_line.start_millis);
         if (prev_line_it != this->begin()) {
@@ -47,7 +54,7 @@ struct merged_lines_t : std::map<long, merged_line_t>
                 post_line.end_millis = prev_line_end_orig;
                 post_line.parts = prev_line.parts;
                 insert0(post_line);
-            } else {
+            } else if (current_line.start_millis < prev_line_end_orig) {
                 merged_line_t post_line;
                 post_line.start_millis = prev_line_end_orig;
                 post_line.end_millis = current_line.end_millis;
@@ -75,6 +82,15 @@ struct merged_lines_t : std::map<long, merged_line_t>
                     post_line.parts = prev_line_parts_orig;
                     insert0(post_line);
                 }
+            }
+        }
+
+        for (auto to_reinsert : fully_shadowed_lines) {
+            this->erase(to_reinsert.start_millis);
+        }
+        for (auto to_reinsert : fully_shadowed_lines) {
+            for (auto part : to_reinsert.parts) {
+                insert(to_reinsert.start_millis, to_reinsert.end_millis, part);
             }
         }
     }
@@ -114,6 +130,9 @@ subtitles_t merge::merge_subtitles_parts(const subtitles_t &input)
     merged_lines_t subtitles_by_time_breaks;
     for (auto line : input) {
         for (auto part : line.parts) {
+            if (part.text.empty()) {
+                continue;
+            }
             subtitles_by_time_breaks.insert(line.start_milis, line.end_milis, part);
         }
     }

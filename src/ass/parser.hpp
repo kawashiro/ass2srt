@@ -4,6 +4,7 @@
 #include <istream>
 #include <list>
 #include <memory>
+#include <set>
 #include <stdint.h>
 #include <string>
 #include <unordered_map>
@@ -35,11 +36,14 @@ namespace ass2srt::ass::parser {
         std::list<field::FieldType> styles_format;
         std::list<field::FieldType> events_format;
         std::unordered_map<std::string, field::styles_spec_t> styles_spec;
+        std::set<std::string> styles_scope;
+        std::set<std::string> excluded_styles;
+        bool exclude_signs; 
         int v_size;
         int line_no;
         bool eof;
 
-        ass_res_t(std::istream &, subtitles_t &);
+        ass_res_t(std::istream &, subtitles_t &, const std::set<std::string> &, const std::set<std::string> &, const bool);
     };
 
     /**

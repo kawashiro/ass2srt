@@ -5,6 +5,7 @@
 #include <list>
 #include <memory>
 #include <string>
+#include "subline.hpp"
 
 namespace ass2srt::strutils {
     /**
@@ -31,6 +32,11 @@ namespace ass2srt::strutils {
      * Split string into parts
      */
     std::list<std::string> split(std::string, const char);
+
+    /**
+     * Convert subtitles to string
+     */
+    std::string subtitles_to_string(const subtitles_t &);
 
     /**
      * Safely format the string

@@ -1,10 +1,21 @@
 #include <gtest/gtest.h>
 #include "merge.hpp"
+#include "strutils.hpp"
 #include "subline.hpp"
 
 using namespace ass2srt;
 
 static const subtitles_t input {
+    {
+        0,
+        100,
+        {
+            {
+                0.5,
+                "",
+            },
+        },
+    },
     {
         10,
         20,
@@ -70,6 +81,26 @@ static const subtitles_t input {
             {
                 0.9,
                 "Top line #0",
+            },
+        },
+    },
+    {
+        75,
+        76,
+        {
+            {
+                0.0,
+                "Short line",
+            },
+        },
+    },
+    {
+        59,
+        80,
+        {
+            {
+                0.0,
+                "Long line on top of short line",
             },
         },
     },
@@ -158,7 +189,7 @@ static const subtitles_t expected {
     },
     {
         56,
-        60,
+        59,
         {
             {
                 0.0,
@@ -166,9 +197,49 @@ static const subtitles_t expected {
             },
         },
     },
+    {
+        59,
+        60,
+        {
+            {
+                0.0,
+                "Middle line #2\nLong line on top of short line",
+            },
+        },
+    },
+    {
+        60,
+        75,
+        {
+            {
+                0.0,
+                "Long line on top of short line",
+            },
+        },
+    },
+    {
+        75,
+        76,
+        {
+            {
+                0.0,
+                "Short line\nLong line on top of short line",
+            },
+        },
+    },
+    {
+        76,
+        80,
+        {
+            {
+                0.0,
+                "Long line on top of short line",
+            },
+        },
+    },
 };
 
 TEST(merge, test_merge_subtitles_parts) {
     auto result = merge::merge_subtitles_parts(input);
-    ASSERT_EQ(result, expected);
+    ASSERT_EQ(result, expected) << "Subtitles did not match. Actual result: " << strutils::subtitles_to_string(result);
 }

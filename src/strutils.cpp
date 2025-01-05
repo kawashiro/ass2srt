@@ -66,3 +66,29 @@ std::list<std::string> strutils::split(std::string input, const char delimiter)
 
     return parts;
 }
+
+std::string strutils::subtitles_to_string(const subtitles_t &subtitles)
+{
+    const std::string indent("    ");
+    const std::string indent2 = indent + indent;
+    const std::string indent3 = indent2 + indent;
+    const std::string indent4 = indent3 + indent;
+
+    std::string output("{\n");
+    for (auto subline : subtitles) {
+        output += indent + "{\n";
+        output += indent2 + std::to_string(subline.start_milis) + ",\n";
+        output += indent2 + std::to_string(subline.end_milis) + ",\n";
+        output += indent2 + "{\n";
+        for (auto part : subline.parts) {
+            output += indent3 + "{\n";
+            output += indent4 + std::to_string((long double)part.v_pos) + ",\n";
+            output += indent4 + "\"" + part.text + "\",\n";
+            output += indent3 + "},\n";
+        }
+        output += indent2 + "},\n";
+        output += indent + "},\n";
+    }
+    output += "}";
+    return output;
+}

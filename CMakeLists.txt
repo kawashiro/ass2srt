@@ -6,10 +6,17 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(
     ass2srt
-    VERSION 0.0.1
+    VERSION 1.0.0
     DESCRIPTION "Convert ASS subtitles toi SRT format easily keeping readability as much as possible"
     HOMEPAGE_URL "https://github.com/kawashiro/ass2srt"
 )
+
+if (NOT CMAKE_INSTALL_PREFIX)
+    set(CMAKE_INSTALL_PREFIX /usr/local/bin)
+endif()
+if (NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release)
+endif()
 
 set(
     ASS2SRT_SOURCES
@@ -46,9 +53,13 @@ target_include_directories(ass2srt PRIVATE "${PROJECT_BINARY_DIR}/src")
 add_compile_options(-Wall -Wextra -Wpedantic)
 string(APPEND CMAKE_CXX_FLAGS_DEBUG " -O0 -ggdb --coverage")
 
-add_executable(ass2srt_test ${ASS2SRT_SOURCES} ${ASS2SRT_TEST_SOURCES})
-target_include_directories(ass2srt_test PRIVATE src/)
-target_link_libraries(ass2srt_test gtest gtest_main)
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_executable(ass2srt_test ${ASS2SRT_SOURCES} ${ASS2SRT_TEST_SOURCES})
+    target_include_directories(ass2srt_test PRIVATE src/)
+    target_link_libraries(ass2srt_test gtest gtest_main)
 
-include(GoogleTest)
-gtest_discover_tests(ass2srt_test)
+    include(GoogleTest)
+    gtest_discover_tests(ass2srt_test)
+endif()
+
+install(TARGETS ass2srt DESTINATION ${CMAKE_INSTALL_PREFIX})
