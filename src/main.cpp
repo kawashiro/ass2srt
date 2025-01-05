@@ -22,7 +22,6 @@ int main(int argc, char **argv)
         return 2;
     }
 
-    // Just a simple test ...
     try {
         std::ifstream input_file(params.input_file, std::ios_base::in);
         if (input_file.fail()) {
