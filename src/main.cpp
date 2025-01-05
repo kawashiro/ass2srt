@@ -3,7 +3,6 @@
 #include <cstdio>
 #include <fstream>
 #include <stdexcept>
-// #include <stdio.h>
 #include "argparser.hpp"
 #include "ass.hpp"
 #include "config.h"
