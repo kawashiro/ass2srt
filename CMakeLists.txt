@@ -21,6 +21,7 @@ set(
     src/ass/vpos.cpp
     src/argparser.cpp
     src/merge.cpp
+    src/srt.cpp
     src/strutils.cpp
     src/subline.cpp
 )
@@ -33,6 +34,7 @@ set(
     tests/ass_test.cpp
     tests/argparser_test.cpp
     tests/merge_test.cpp
+    tests/srt_test.cpp
     tests/statemachine_test.cpp
     tests/strutils_test.cpp
     tests/subline_test.cpp

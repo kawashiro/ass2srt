@@ -4,6 +4,7 @@
 #include "argparser.hpp"
 #include "ass.hpp"
 #include "config.h"
+#include "srt.hpp"
 
 using namespace ass2srt;
 
@@ -19,12 +20,11 @@ int main(int argc, char **argv)
     // Just a simple test ...
     try {
         std::ifstream input_file(params.input_file, std::ios_base::in);
+        std::ofstream output_file(params.output_file, std::ios_base::out);
+
         auto lines = ass::parse_ass_stream(input_file);
-        for (auto line : lines) {
-            for (auto part : line.parts) {
-                printf("==>\n  [%f] %s\n", part.v_pos, part.text.c_str());
-            }
-        }
+        srt::write_srt_stream(lines, output_file);
+        
     } catch (const std::runtime_error &e) {
         printf("FATAL: %s\n", e.what());
         return 1;

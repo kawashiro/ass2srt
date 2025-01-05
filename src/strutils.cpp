@@ -46,6 +46,7 @@ void strutils::replace_all(std::string &value, const std::string &search, const 
     size_t pos = 0;
     while ((pos = value.find(search, pos)) != std::string::npos) {
         value.replace(pos, search.length(), replacement);
+        pos += replacement.length() - search.length() + 1;
     }
 }
 
