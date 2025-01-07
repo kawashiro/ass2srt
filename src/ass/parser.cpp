@@ -205,7 +205,7 @@ std::unique_ptr<StateType> StyleSpecState::transition(ass_res_t &value)
     auto alignment = parser.get<int>(field::ALIGNMENT);
     auto margin_v = parser.get<int>(field::MARGIN_V);
 
-    value.styles_spec[style_name] = {static_cast<uint8_t>(alignment), margin_v, -1};
+    value.styles_spec[style_name] = {static_cast<uint8_t>(alignment), margin_v, -1, false};
 
     return STATE_PTR(StylesSectionState);
 }
@@ -297,7 +297,9 @@ std::unique_ptr<StateType> EventDialogueLineState::transition(ass_res_t &value)
                 parsed_part.text = field::parse_plain_text(current_part); // Text
             }
 
-            parts->push_back(parsed_part);
+            if (!parsed_part.inline_style.is_drawing) {
+                parts->push_back(parsed_part);
+            }
             part_begin = part_end;
         }
 
@@ -319,9 +321,11 @@ std::unique_ptr<StateType> EventDialogueLineState::transition(ass_res_t &value)
     auto style = style_spec_it->second;
 
     subline result {start_millis, end_millis, {}};
+    int ass_part_x_order = 0;
     for (auto ass_part : text_parts) {
         float v_pos = ass::vpos::calculate_vpos(value.v_size, margin_v, style, ass_part.inline_style);
-        result.parts.push_back({v_pos, ass_part.text});
+        result.parts.push_back({v_pos, ass_part_x_order, ass_part.text});
+        ass_part_x_order++;
     }
 
     // Styles-based filtering

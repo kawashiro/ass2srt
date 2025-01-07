@@ -83,6 +83,7 @@ std::string strutils::subtitles_to_string(const subtitles_t &subtitles)
         for (auto part : subline.parts) {
             output += indent3 + "{\n";
             output += indent4 + std::to_string((long double)part.v_pos) + ",\n";
+            output += indent4 + std::to_string(part.x_order) + ",\n";
             output += indent4 + "\"" + part.text + "\",\n";
             output += indent3 + "},\n";
         }

@@ -12,6 +12,7 @@ static const subtitles_t input {
         {
             {
                 0.5,
+                0,
                 "",
             },
         },
@@ -22,14 +23,17 @@ static const subtitles_t input {
         {
             {
                 1.0,
+                0,
                 "Top line #1",
             },
             {
                 0.1,
+                0,
                 "Bottom line #1",
             },
             {
                 0.5,
+                0,
                 "Middle line #1",
             },
         },
@@ -40,6 +44,7 @@ static const subtitles_t input {
         {
             {
                 0.4,
+                0,
                 "Middle line #2",
             },
         },
@@ -50,6 +55,7 @@ static const subtitles_t input {
         {
             {
                 0.0,
+                0,
                 "Intersects #1 at the end",
             },
         },
@@ -60,6 +66,7 @@ static const subtitles_t input {
         {
             {
                 0.0,
+                0,
                 "Intersects #1 at the beginning",
             },
         },
@@ -70,6 +77,7 @@ static const subtitles_t input {
         {
             {
                 0.0,
+                0,
                 "Intersects #2 in the middle",
             },
         },
@@ -80,6 +88,7 @@ static const subtitles_t input {
         {
             {
                 0.9,
+                0,
                 "Top line #0",
             },
         },
@@ -90,6 +99,7 @@ static const subtitles_t input {
         {
             {
                 0.0,
+                0,
                 "Short line",
             },
         },
@@ -100,7 +110,19 @@ static const subtitles_t input {
         {
             {
                 0.0,
+                0,
                 "Long line on top of short line",
+            },
+        },
+    },
+    {
+        13,
+        14,
+        {
+            {
+                0.0,
+                0,
+                "Should keep all old lines",
             },
         },
     },
@@ -113,6 +135,7 @@ static const subtitles_t expected {
         {
             {
                 0.0,
+                0,
                 "Top line #0",
             },
         },
@@ -123,6 +146,7 @@ static const subtitles_t expected {
         {
             {
                 0.0,
+                0,
                 "Intersects #1 at the beginning",
             },
         },
@@ -133,16 +157,40 @@ static const subtitles_t expected {
         {
             {
                 0.0,
+                0,
                 "Top line #1\nMiddle line #1\nBottom line #1\nIntersects #1 at the beginning",
             },
         },
     },
     {
         12,
+        13,
+        {
+            {
+                0.0,
+                0,
+                "Top line #1\nMiddle line #1\nBottom line #1",
+            },
+        },
+    },
+    {
+        13,
+        14,
+        {
+            {
+                0.0,
+                0,
+                "Top line #1\nMiddle line #1\nBottom line #1\nShould keep all old lines",
+            },
+        },
+    },
+    {
+        14,
         15,
         {
             {
                 0.0,
+                0,
                 "Top line #1\nMiddle line #1\nBottom line #1",
             },
         },
@@ -153,6 +201,7 @@ static const subtitles_t expected {
         {
             {
                 0.0,
+                0,
                 "Top line #1\nMiddle line #1\nBottom line #1\nIntersects #1 at the end",
             },
         },
@@ -163,6 +212,7 @@ static const subtitles_t expected {
         {
             {
                 0.0,
+                0,
                 "Intersects #1 at the end",
             },
         },
@@ -173,6 +223,7 @@ static const subtitles_t expected {
         {
             {
                 0.0,
+                0,
                 "Middle line #2",
             },
         },
@@ -183,6 +234,7 @@ static const subtitles_t expected {
         {
             {
                 0.0,
+                0,
                 "Middle line #2\nIntersects #2 in the middle",
             },
         },
@@ -193,6 +245,7 @@ static const subtitles_t expected {
         {
             {
                 0.0,
+                0,
                 "Middle line #2",
             },
         },
@@ -203,6 +256,7 @@ static const subtitles_t expected {
         {
             {
                 0.0,
+                0,
                 "Middle line #2\nLong line on top of short line",
             },
         },
@@ -213,6 +267,7 @@ static const subtitles_t expected {
         {
             {
                 0.0,
+                0,
                 "Long line on top of short line",
             },
         },
@@ -223,7 +278,8 @@ static const subtitles_t expected {
         {
             {
                 0.0,
-                "Short line\nLong line on top of short line",
+                0,
+                "Short lineLong line on top of short line",
             },
         },
     },
@@ -233,6 +289,7 @@ static const subtitles_t expected {
         {
             {
                 0.0,
+                0,
                 "Long line on top of short line",
             },
         },

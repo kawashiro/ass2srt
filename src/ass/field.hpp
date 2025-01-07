@@ -65,8 +65,9 @@ namespace ass2srt::ass::field {
         uint8_t alignment;
         int margin_v;
         int explicit_y_pos;
+        bool is_drawing;
         explicit styles_spec_t();
-        styles_spec_t(uint8_t alignment, int margin_v, int explicit_v_pos);
+        styles_spec_t(uint8_t, int, int, bool);
         styles_spec_t(const styles_spec_t &);
         styles_spec_t& operator =(const styles_spec_t &);
     };

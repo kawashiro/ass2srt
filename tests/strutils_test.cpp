@@ -38,14 +38,17 @@ TEST(strutils, test_subtitles_to_string) {
             {
                 {
                     0.5,
+                    0,
                     "This is ",
                 },
                 {
                     0.9,
+                    1,
                     "Some complex string,",
                 },
                 {
                     0.2,
+                    2,
                     " yo!",
                 },
             },
@@ -56,6 +59,7 @@ TEST(strutils, test_subtitles_to_string) {
             {
                 {
                     0.0,
+                    0,
                     "And this is a simple one...",
                 },
             },
@@ -69,14 +73,17 @@ TEST(strutils, test_subtitles_to_string) {
         "        {\n"
         "            {\n"
         "                0.500000,\n"
+        "                0,\n"
         "                \"This is \",\n"
         "            },\n"
         "            {\n"
         "                0.900000,\n"
+        "                1,\n"
         "                \"Some complex string,\",\n"
         "            },\n"
         "            {\n"
         "                0.200000,\n"
+        "                2,\n"
         "                \" yo!\",\n"
         "            },\n"
         "        },\n"
@@ -87,6 +94,7 @@ TEST(strutils, test_subtitles_to_string) {
         "        {\n"
         "            {\n"
         "                0.000000,\n"
+        "                0,\n"
         "                \"And this is a simple one...\",\n"
         "            },\n"
         "        },\n"

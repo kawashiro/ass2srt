@@ -15,6 +15,11 @@ namespace ass2srt {
         float v_pos;
 
         /**
+         * Horizontal position order
+         */
+        int x_order;
+
+        /**
          * Inner text
          */
         std::string text;

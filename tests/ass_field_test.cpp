@@ -56,6 +56,16 @@ TEST(ass_field, parse_inline_style_combined) {
     ASSERT_EQ(res.explicit_y_pos, 44);
 }
 
+TEST(ass_field, parse_inline_style_drawing_on) {
+    auto res = ass::field::parse_inline_style("{\\p1\\pos(643,655)}");
+    ASSERT_TRUE(res.is_drawing);
+}
+
+TEST(ass_field, parse_inline_style_drawing_off) {
+    auto res = ass::field::parse_inline_style("{\\p0\\pos(643,655)}");
+    ASSERT_FALSE(res.is_drawing);
+}
+
 TEST(ass_field, parse_plain_text) {
     auto res = ass::field::parse_plain_text("This is\\Ntext!");
     ASSERT_EQ(res, "This is\ntext!");
@@ -80,7 +90,7 @@ TEST(ass_styles_spec, init) {
     ASSERT_EQ(defalt_style.margin_v, -1);
     ASSERT_EQ(defalt_style.explicit_y_pos, -1);
 
-    ass::field::styles_spec_t some_style(ALIGN_DEFAULT, 10, 20);
+    ass::field::styles_spec_t some_style(ALIGN_DEFAULT, 10, 20, false);
     ASSERT_EQ(some_style.alignment, ALIGN_DEFAULT);
     ASSERT_EQ(some_style.margin_v, 10);
     ASSERT_EQ(some_style.explicit_y_pos, 20);

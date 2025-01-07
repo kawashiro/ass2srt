@@ -40,21 +40,24 @@ static inline T get_list_el(const std::list<T> &list, const int pos)
 field::styles_spec_t::styles_spec_t():
     alignment(0),
     margin_v(-1),
-    explicit_y_pos(-1)
+    explicit_y_pos(-1),
+    is_drawing(false)
 {
 }
 
-field::styles_spec_t::styles_spec_t(uint8_t alignment, int margin_v, int explicit_y_pos):
+field::styles_spec_t::styles_spec_t(uint8_t alignment, int margin_v, int explicit_y_pos, bool is_drawing):
     alignment(alignment),
     margin_v(margin_v),
-    explicit_y_pos(explicit_y_pos)
+    explicit_y_pos(explicit_y_pos),
+    is_drawing(is_drawing)
 {
 }
 
 field::styles_spec_t::styles_spec_t(const field::styles_spec_t &value):
     alignment(value.alignment),
     margin_v(value.margin_v),
-    explicit_y_pos(value.explicit_y_pos)
+    explicit_y_pos(value.explicit_y_pos),
+    is_drawing(value.is_drawing)
 {
 }
 
@@ -63,6 +66,7 @@ field::styles_spec_t& field::styles_spec_t::operator =(const field::styles_spec_
     this->alignment = value.alignment;
     this->margin_v = value.margin_v;
     this->explicit_y_pos = value.explicit_y_pos;
+    this->is_drawing = value.is_drawing;
     return *this;
 }
 
@@ -98,12 +102,25 @@ field::styles_spec_t field::parse_inline_style(const std::string &value)
 
     auto styles = strutils::split(value.substr(1, value.length() - 2), '\\');
     for (auto style_ptr = ++styles.begin(); style_ptr != styles.end(); ++style_ptr) {
+        int drawing_flag;
+        if (std::sscanf(style_ptr->c_str(), "p%d", &drawing_flag) == 1) {
+            result.is_drawing = drawing_flag > 0;
+            continue;
+        }
+
         int alignment;
-        if (std::sscanf(style_ptr->c_str(), "a%d", &alignment) == 1) {
-            if(!ALIGN_VALID(alignment)) {
-                throw std::invalid_argument(strutils::format("Invalid alignment %d", alignment));
+        bool alignment_parsed = false;
+        for (auto alignment_format : {"a%d", "an%d"}) {
+            if (std::sscanf(style_ptr->c_str(), alignment_format, &alignment) == 1) {
+                if(!ALIGN_VALID(alignment)) {
+                    throw std::invalid_argument(strutils::format("Invalid alignment %d", alignment));
+                }
+                result.alignment = alignment;
+                alignment_parsed = true;
+                break;
             }
-            result.alignment = alignment;
+        }
+        if (alignment_parsed) {
             continue;
         }
 

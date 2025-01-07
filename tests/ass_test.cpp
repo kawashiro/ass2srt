@@ -124,14 +124,17 @@ static const subtitles_t good_file_result {
         {
             {
                 0.5,
+                0,
                 "This is ",
             },
             {
-                0.972222209,
+                0.027777778,
+                1,
                 "Some complex string,",
             },
             {
-                0.00277777785,
+                0.997222245,
+                2,
                 " yo!",
             },
         },
@@ -141,7 +144,8 @@ static const subtitles_t good_file_result {
         12500,
         {
             {
-                0.0,
+                0.0444444455,
+                0,
                 "And this is a simple one...",
             },
         },
@@ -155,6 +159,7 @@ static const subtitles_t excluded_signs_result {
         {
             {
                 0.0,
+                0,
                 "Some text...",
             },
         },
@@ -168,6 +173,7 @@ static const subtitles_t leave_only_styles_result {
         {
             {
                 0.0,
+                0,
                 "Some text #2...",
             },
         },
@@ -181,6 +187,7 @@ static const subtitles_t exclude_styles_result {
         {
             {
                 0.0,
+                0,
                 "Some text...",
             },
         },

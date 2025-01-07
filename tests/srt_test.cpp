@@ -12,6 +12,7 @@ static const subtitles_t input {
         {
             {
                 0.0,
+                0,
                 "Line #1 at the beginning",
             },
         },
@@ -22,6 +23,7 @@ static const subtitles_t input {
         {
             {
                 0.0,
+                0,
                 "Top line #1\nMiddle line #1\nBottom line #1\nLine #1 at the beginning",
             },
         },
@@ -32,6 +34,7 @@ static const subtitles_t input {
         {
             {
                 0.0,
+                0,
                 "Line #2 at the beginning",
             },
         },
