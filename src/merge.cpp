@@ -39,9 +39,9 @@ public:
     }
 
     NonIntersectedSubtitlesList(const NonIntersectedSubtitlesList&) = delete;
-    NonIntersectedSubtitlesList(const NonIntersectedSubtitlesList&&) = delete;
+    NonIntersectedSubtitlesList(NonIntersectedSubtitlesList&&) = delete;
     auto operator=(const NonIntersectedSubtitlesList&) -> NonIntersectedSubtitlesList& = delete;
-    auto operator=(const NonIntersectedSubtitlesList&&) -> NonIntersectedSubtitlesList&& = delete;
+    auto operator=(NonIntersectedSubtitlesList&&) -> NonIntersectedSubtitlesList& = delete;
     ~NonIntersectedSubtitlesList() = default;
 
     void append(const long start, const long end, const subline_part& part)
