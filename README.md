@@ -40,7 +40,7 @@ To build the converter from source, you will need:
 
 1. Clone the repository:
 ```bash
-git checkout https://github.com/kawashiro/ass2srt.git
+git clone https://github.com/kawashiro/ass2srt.git
 ```
 2. Navigate into the project directory:
 ```bash
