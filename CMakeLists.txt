@@ -1,12 +1,13 @@
 cmake_minimum_required(VERSION 3.25.0)
 
-set(CMAKE_VERBOSE_MAKEFILE on)
+set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project(
     ass2srt
-    VERSION 1.0.0
+    VERSION 1.0.2
     DESCRIPTION "Convert ASS subtitles toi SRT format easily keeping readability as much as possible"
     HOMEPAGE_URL "https://github.com/kawashiro/ass2srt"
 )
@@ -62,4 +63,4 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     gtest_discover_tests(ass2srt_test)
 endif()
 
-install(TARGETS ass2srt DESTINATION ${CMAKE_INSTALL_PREFIX})
+install(TARGETS ass2srt DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")

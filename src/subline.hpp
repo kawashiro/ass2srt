@@ -1,61 +1,61 @@
-#ifndef _ASS2SRT_SUBLINE_H
-#define _ASS2SRT_SUBLINE_H
+#ifndef ASS2SRT_SUBLINE_H
+#define ASS2SRT_SUBLINE_H
 
 #include <list>
 #include <string>
 
 namespace ass2srt {
+/**
+ * One smallest part uf subline
+ */
+struct subline_part {
     /**
-     * One smallest part uf subline
+     * Vertical position: 0 - top, 1 - bottom
      */
-    struct subline_part {
-        /**
-         * Vertical position: 0 - top, 1 - bottom
-         */
-        float v_pos;
-
-        /**
-         * Horizontal position order
-         */
-        int x_order;
-
-        /**
-         * Inner text
-         */
-        std::string text;
-
-        /**
-         * Compare parts
-         */
-        bool operator ==(const subline_part &) const;
-    };
+    float v_pos;
 
     /**
-     * Vertically aligned subtitle line
+     * Horizontal position order
      */
-    struct subline {
-        /**
-         * Start time
-         */
-        long start_milis;
+    int x_order;
 
-        /**
-         * End time
-         */
-        long end_milis;
-        
-        /**
-         * Ordered text parts
-         */
-        std::list<subline_part> parts;
+    /**
+     * Inner text
+     */
+    std::string text;
 
-        /**
-         * Compare lines
-         */
-        bool operator ==(const subline &) const;
-    };
+    /**
+     * Compare parts
+     */
+    auto operator==(const subline_part&) const -> bool;
+};
 
-    typedef std::list<subline> subtitles_t;
+/**
+ * Vertically aligned subtitle line
+ */
+struct subline {
+    /**
+     * Start time
+     */
+    long start_milis;
+
+    /**
+     * End time
+     */
+    long end_milis;
+
+    /**
+     * Ordered text parts
+     */
+    std::list<subline_part> parts;
+
+    /**
+     * Compare lines
+     */
+    auto operator==(const subline&) const -> bool;
+};
+
+using subtitles_t = std::list<subline>;
 }
 
 #endif

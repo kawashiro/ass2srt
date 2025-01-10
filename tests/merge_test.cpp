@@ -1,7 +1,7 @@
-#include <gtest/gtest.h>
 #include "merge.hpp"
 #include "strutils.hpp"
 #include "subline.hpp"
+#include <gtest/gtest.h>
 
 using namespace ass2srt;
 
@@ -296,7 +296,8 @@ static const subtitles_t expected {
     },
 };
 
-TEST(merge, test_merge_subtitles_parts) {
+TEST(Merge, TestMergeSubtitlesParts)
+{
     auto result = merge::merge_subtitles_parts(input);
     ASSERT_EQ(result, expected) << "Subtitles did not match. Actual result: " << strutils::subtitles_to_string(result);
 }

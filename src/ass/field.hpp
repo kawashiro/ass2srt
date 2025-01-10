@@ -1,11 +1,12 @@
-#ifndef _ASS2SRT_ASS_FIELD_H
-#define _ASS2SRT_ASS_FIELD_H
+#ifndef ASS2SRT_ASS_FIELD_H
+#define ASS2SRT_ASS_FIELD_H
 
+#include "../strutils.hpp"
+#include <array>
+#include <cstdint>
 #include <list>
 #include <stdexcept>
-#include <stdint.h>
 #include <string>
-#include "../strutils.hpp"
 
 // Text align calculation
 #define ALIGN_LEFT 1
@@ -27,141 +28,139 @@
 #define ALIGN_VALID(VAL) (ALIGN_IS_BOTTOM(VAL) || ALIGN_IS_MIDDLE(VAL) || ALIGN_IS_TOP(VAL))
 
 namespace ass2srt::ass::field {
+/**
+ * Possible fields in the sections
+ */
+enum FieldType : std::uint8_t {
+    NAME = 0,
+    STYLE = 1,
+    ALIGNMENT = 2,
+    MARGIN_V = 3,
+    START = 4,
+    END = 5,
+    TEXT = 6,
+    UNKNOWN = 15
+};
+
+/**
+ * Field info
+ */
+struct field_t {
     /**
-     * Possible fields in the sections
+     * Definition in the file as a string
      */
-    enum FieldType
+    const char* definition;
+
+    /**
+     * Unique field id
+     */
+    FieldType id;
+};
+
+/**
+ * Parsed style values
+ */
+struct styles_spec_t {
+    uint8_t alignment;
+    int margin_v;
+    int explicit_y_pos;
+    bool is_drawing;
+    explicit styles_spec_t();
+    styles_spec_t(uint8_t, int, int, bool);
+};
+
+/**
+ * Available fields
+ */
+const std::array<field_t, 7> fields_list = { {
+    { .definition = "Name", .id = NAME },
+    { .definition = "Style", .id = STYLE },
+    { .definition = "Alignment", .id = ALIGNMENT },
+    { .definition = "MarginV", .id = MARGIN_V },
+    { .definition = "Start", .id = START },
+    { .definition = "End", .id = END },
+    { .definition = "Text", .id = TEXT },
+} };
+
+/**
+ * Parse the field definition
+ */
+auto parse_type(const std::string&) -> FieldType;
+
+/**
+ * Parse ASS time string
+ */
+auto parse_time_millis(const std::string&) -> long;
+
+/**
+ * Parse ASS text inline styles
+ */
+auto parse_inline_style(const std::string&) -> styles_spec_t;
+
+/**
+ * Parse ergular text value from dialogue line
+ */
+auto parse_plain_text(const std::string&) -> std::string;
+
+/**
+ * Line parser
+ */
+class LineValuesParser {
+public:
+    /**
+     * To add internal data allocation
+     */
+    explicit LineValuesParser();
+
+    LineValuesParser(const LineValuesParser&) = delete;
+    LineValuesParser(LineValuesParser&&) = delete;
+    auto operator=(const LineValuesParser&) -> LineValuesParser& = delete;
+    auto operator=(LineValuesParser&&) -> LineValuesParser& = delete;
+
+    /**
+     * Add parsing function for a field
+     */
+    template <typename T>
+    void on(const FieldType field_type, T* (*parser_fn)(std::string&))
     {
-        NAME = 0,
-        STYLE,
-        ALIGNMENT,
-        MARGIN_V,
-        START,
-        END,
-        TEXT,
-        UNKNOWN = 15
-    };
+        this->parsers[field_type] = reinterpret_cast<void* (*)(std::string&)>(parser_fn);
+        this->dealloc[field_type] = [](void* ptr) { delete (T*)ptr; };
+    }
 
     /**
-     * Field info
+     * Parse the line
      */
-    struct field_t
+    void parse(const std::list<field::FieldType>&, const std::string&);
+
+    /**
+     * Ge the parsed value
+     */
+    template <typename T>
+    auto get(const FieldType field) const -> T
     {
-        /**
-         * Definition in the file as a string
-         */
-        const char *definition;
-
-        /**
-         * Unique field id
-         */
-        const FieldType id;
-    };
-
-    /**
-     * Parsed style values
-     */
-    struct styles_spec_t {
-        uint8_t alignment;
-        int margin_v;
-        int explicit_y_pos;
-        bool is_drawing;
-        explicit styles_spec_t();
-        styles_spec_t(uint8_t, int, int, bool);
-        styles_spec_t(const styles_spec_t &);
-        styles_spec_t& operator =(const styles_spec_t &);
-    };
-
-    /**
-     * Available fields
-     */
-    const field_t fields_list[] = {
-        { "Name", NAME },
-        { "Style", STYLE },
-        { "Alignment", ALIGNMENT },
-        { "MarginV", MARGIN_V },
-        { "Start", START },
-        { "End", END },
-        { "Text", TEXT },
-    };
-
-    /**
-     * Parse the field definition
-     */
-    FieldType parse_type(const std::string &);
-
-    /**
-     * Parse ASS time string
-     */
-    long parse_time_millis(const std::string &);
-
-    /**
-     * Parse ASS text inline styles
-     */
-    styles_spec_t parse_inline_style(const std::string &);
-
-    /**
-     * Parse ergular text value from dialogue line
-     */
-    std::string parse_plain_text(const std::string);
-
-    /**
-     * Line parser
-     */
-    class LineValuesParser {
-        public:
-        /**
-         * To add internal data allocation
-         */
-        explicit LineValuesParser();
-        
-        LineValuesParser(const LineValuesParser &) = delete;
-        LineValuesParser &operator=(const LineValuesParser &) = delete;
-
-        /**
-         * Add parsing function for a field
-         */
-        template<typename T>
-        void on(const FieldType field_type, T *(*parser_fn)(std::string &))
-        {
-            this->parsers[field_type] = reinterpret_cast<void *(*)(std::string &)>(parser_fn);
-            this->dealloc[field_type] = [](void *ptr) { delete (T*)ptr; };
-        }
-
-        /**
-         * Parse the line
-         */
-        void parse(const std::list<field::FieldType> &, const std::string &);
-
-        /**
-         * Ge the parsed value
-         */
-        template<typename T>
-        T get(const FieldType field) const
-        {
-            if (this->result[field] == nullptr) {
-                auto field_name = strutils::format("0x%x", field);
-                for (auto fld : fields_list) {
-                    if (fld.id == field) {
-                        field_name = std::string(fld.definition);
-                        break;
-                    }
+        if (this->result[field] == nullptr) {
+            auto field_name = strutils::format("0x%x", field);
+            for (auto fld : fields_list) {
+                if (fld.id == field) {
+                    field_name = std::string(fld.definition);
+                    break;
                 }
-                throw std::invalid_argument(strutils::format("Field %s is not parsed", field_name.c_str()));
             }
-            return *(T*)(this->result[field]);
+            throw std::invalid_argument(strutils::format("Field %s is not parsed", field_name.c_str()));
         }
+        return *(T*)(this->result[field]);
+    }
 
-        /**
-         * To free up internal results holder
-         */
-        ~LineValuesParser();
+    /**
+     * To free up internal results holder
+     */
+    ~LineValuesParser();
 
-        private:
-        void *result[UNKNOWN + 1];
-        void *(*parsers[UNKNOWN + 1])(std::string &);
-        void (*dealloc[UNKNOWN + 1])(void *);
-    };
+private:
+    std::array<void*, UNKNOWN + 1> result;
+    std::array<void* (*)(std::string&), UNKNOWN + 1> parsers;
+    std::array<void (*)(void*), UNKNOWN + 1> dealloc;
+};
 }
 
 #endif

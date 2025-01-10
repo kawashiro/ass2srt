@@ -1,15 +1,16 @@
+#include "argparser.hpp"
 #include <set>
 #include <string>
-#include <unistd.h>
-#include "argparser.hpp"
+#include <unistd.h> // NOLINT
 
 using namespace ass2srt;
 
-static const std::set<std::string> split_set_arg(char *input)
+namespace {
+auto split_set_arg(char* input) -> std::set<std::string>
 {
     std::set<std::string> res {};
-    
-    char *current = nullptr;
+
+    char* current = nullptr;
     for (;;) {
         if (current == nullptr) {
             current = input;
@@ -25,26 +26,27 @@ static const std::set<std::string> split_set_arg(char *input)
 
     return res;
 }
+}
 
-bool argparser::args::is_valid() const
+auto argparser::args::is_valid() const -> bool
 {
     return !this->has_extra_opts && !this->input_file.empty() && !this->output_file.empty();
 }
 
-const argparser::args argparser::parse_args(int argc, char **argv)
+auto argparser::parse_args(int argc, char** argv) -> argparser::args
 {
-    std::string input_file = "";
-    std::string output_file = "";
+    std::string input_file;
+    std::string output_file;
     std::set<std::string> styles_scope {};
     std::set<std::string> excluded_styles {};
     bool exclude_signs = false;
     bool has_extra_opt = false;
 
-    char opt;
-    while ((opt = getopt(argc, argv, "i:o:s:e:x")) != -1) {
+    int opt = -1;
+    while ((opt = getopt(argc, argv, "i:o:s:e:x")) != -1) { // NOLINT
         switch (opt) {
         case 'i':
-            input_file = optarg;
+            input_file = optarg; // NOLINT
             break;
         case 'o':
             output_file = optarg;
@@ -64,11 +66,11 @@ const argparser::args argparser::parse_args(int argc, char **argv)
     }
 
     return {
-        input_file,
-        output_file,
-        styles_scope,
-        excluded_styles,
-        exclude_signs,
-        has_extra_opt
-     };
+        .input_file = input_file,
+        .output_file = output_file,
+        .styles_scope = styles_scope,
+        .excluded_styles = excluded_styles,
+        .exclude_signs = exclude_signs,
+        .has_extra_opts = has_extra_opt
+    };
 }

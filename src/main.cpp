@@ -1,18 +1,19 @@
-#include <cstring>
-#include <cerrno>
-#include <cstdio>
-#include <fstream>
-#include <stdexcept>
 #include "argparser.hpp"
 #include "ass.hpp"
 #include "config.h"
 #include "merge.hpp"
 #include "srt.hpp"
 #include "strutils.hpp"
+#include <cerrno>
+#include <cstdio>
+#include <cstring>
+#include <fstream>
+#include <iostream>
+#include <stdexcept>
 
 using namespace ass2srt;
 
-int main(int argc, char **argv)
+auto main(int argc, char** argv) -> int
 {
     const argparser::args params = argparser::parse_args(argc, argv);
     if (!params.is_valid()) {
@@ -36,7 +37,7 @@ int main(int argc, char **argv)
         auto merged_lines = merge::merge_subtitles_parts(raw_lines);
         srt::write_srt_stream(merged_lines, output_file);
 
-    } catch (const std::runtime_error &e) {
+    } catch (const std::runtime_error& e) {
         printf("FATAL: %s\n", e.what());
         return 1;
     }

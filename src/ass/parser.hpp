@@ -1,110 +1,109 @@
-#ifndef _ASS2SRT_ASS_PARSERSTATE_H
-#define _ASS2SRT_ASS_PARSERSTATE_H
+#ifndef ASS2SRT_ASS_PARSERSTATE_H
+#define ASS2SRT_ASS_PARSERSTATE_H
 
+#include "../statemachine.hpp"
+#include "../subline.hpp"
+#include "field.hpp"
 #include <istream>
 #include <list>
 #include <memory>
 #include <set>
-#include <stdint.h>
 #include <string>
 #include <unordered_map>
-#include "field.hpp"
-#include "../statemachine.hpp"
-#include "../subline.hpp"
 
+// NOLINTBEGIN
 #define PARSER_STATE_CLASS_DECL(NAME)                                             \
-    class NAME : public StateType                                                 \
-    {                                                                             \
-        public:                                                                   \
-        virtual std::unique_ptr<StateType> transition(ass_res_t &value) override; \
-        void output(ass_res_t &value) override;                                   \
+    class NAME : public StateType {                                               \
+    public:                                                                       \
+        auto transition(ass_res_t& value) -> std::unique_ptr<StateType> override; \
+        void output(ass_res_t& value) override;                                   \
     }
+// NOLINTEND
 
 namespace ass2srt::ass::parser {
-    /**
-     * Intermediate parsing result
-     */
-    struct ass_res_t
-    {
-        struct subline_part_t {
-            field::styles_spec_t inline_style;
-            std::string text;
-        };
-        std::istream &istream;
-        subtitles_t &result;
-        std::string token;
-        std::list<field::FieldType> styles_format;
-        std::list<field::FieldType> events_format;
-        std::unordered_map<std::string, field::styles_spec_t> styles_spec;
-        std::set<std::string> styles_scope;
-        std::set<std::string> excluded_styles;
-        bool exclude_signs; 
-        int v_size;
-        int line_no;
-        bool eof;
-
-        ass_res_t(std::istream &, subtitles_t &, const std::set<std::string> &, const std::set<std::string> &, const bool);
+/**
+ * Intermediate parsing result
+ */
+struct ass_res_t {
+    struct subline_part_t {
+        field::styles_spec_t inline_style;
+        std::string text;
     };
+    std::istream& istream;
+    subtitles_t& result;
+    std::string token;
+    std::list<field::FieldType> styles_format;
+    std::list<field::FieldType> events_format;
+    std::unordered_map<std::string, field::styles_spec_t> styles_spec;
+    std::set<std::string> styles_scope;
+    std::set<std::string> excluded_styles;
+    bool exclude_signs;
+    int v_size;
+    int line_no;
+    bool eof;
 
-    /**
-     * Base state class
-     */
-    typedef statemachine::State<ass_res_t> StateType;
+    ass_res_t(std::istream&, subtitles_t&, const std::set<std::string>&, const std::set<std::string>&, bool);
+};
 
-    /**
-     * Top level of the file
-     */
-    PARSER_STATE_CLASS_DECL(InitialState);
+/**
+ * Base state class
+ */
+using StateType = statemachine::State<ass_res_t>;
 
-    /**
-     * Global script metadata section
-     */
-    PARSER_STATE_CLASS_DECL(ScriptInfoSectionState);
+/**
+ * Top level of the file
+ */
+PARSER_STATE_CLASS_DECL(InitialState);
 
-    /**
-     * Styles section
-     */
-    PARSER_STATE_CLASS_DECL(StylesSectionState);
+/**
+ * Global script metadata section
+ */
+PARSER_STATE_CLASS_DECL(ScriptInfoSectionState);
 
-    /**
-     * Styles format desc
-     */
-    PARSER_STATE_CLASS_DECL(StylesFormatState);
+/**
+ * Styles section
+ */
+PARSER_STATE_CLASS_DECL(StylesSectionState);
 
-    /**
-     * Style line
-     */
-    PARSER_STATE_CLASS_DECL(StyleSpecState);
+/**
+ * Styles format desc
+ */
+PARSER_STATE_CLASS_DECL(StylesFormatState);
 
-    /**
-     * Events section
-     */
-    PARSER_STATE_CLASS_DECL(EventsSectionState);
+/**
+ * Style line
+ */
+PARSER_STATE_CLASS_DECL(StyleSpecState);
 
-    /**
-     * Events format desc
-     */
-    PARSER_STATE_CLASS_DECL(EventsFormatState);
+/**
+ * Events section
+ */
+PARSER_STATE_CLASS_DECL(EventsSectionState);
 
-    /**
-     * Event dialogue line
-     */
-    PARSER_STATE_CLASS_DECL(EventDialogueLineState);
+/**
+ * Events format desc
+ */
+PARSER_STATE_CLASS_DECL(EventsFormatState);
 
-    /**
-     * Event ignored line (comment or unsupported)
-     */
-    PARSER_STATE_CLASS_DECL(EventIgnoredLineState);
+/**
+ * Event dialogue line
+ */
+PARSER_STATE_CLASS_DECL(EventDialogueLineState);
 
-    /**
-     * It is a valid section declaration but we have no need to support it yet
-     */
-    PARSER_STATE_CLASS_DECL(UnsupportedSectionState);
+/**
+ * Event ignored line (comment or unsupported)
+ */
+PARSER_STATE_CLASS_DECL(EventIgnoredLineState);
 
-    /**
-     * Final state
-     */
-    typedef statemachine::FinalState<ass_res_t> FinalState;
+/**
+ * It is a valid section declaration but we have no need to support it yet
+ */
+PARSER_STATE_CLASS_DECL(UnsupportedSectionState);
+
+/**
+ * Final state
+ */
+using FinalState = statemachine::FinalState<ass_res_t>;
 }
 
 #endif

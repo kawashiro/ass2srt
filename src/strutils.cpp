@@ -1,47 +1,44 @@
-#include <algorithm> 
-#include <cctype>
-#include <list>
-#include <locale>
-#include <string>
 #include "strutils.hpp"
+#include "subline.hpp"
+#include <algorithm>
+#include <cctype>
+#include <cstdio>
+#include <list>
+#include <string>
 
 using namespace ass2srt;
 
-void strutils::ltrim(std::string &string)
+void strutils::ltrim(std::string& string)
 {
     string.erase(
         string.begin(),
-        std::find_if(
-            string.begin(),
-            string.end(),
-            [](unsigned char ch) {
-                return !std::isspace(ch);
-            }
-        )
-    );
+        std::ranges::find_if(
+            string,
+            [](unsigned char symbol) {
+                return !std::isspace(symbol);
+            }));
 }
 
-void strutils::rtrim(std::string &string)
+void strutils::rtrim(std::string& string)
 {
     string.erase(
-        std::find_if(
-            string.rbegin(), 
+        std::ranges::find_if(
+            string.rbegin(),
             string.rend(),
-            [](unsigned char ch) {
-                return !std::isspace(ch);
-            }
-        ).base(),
-        string.end()
-    );
+            [](unsigned char symbol) {
+                return !std::isspace(symbol);
+            })
+            .base(),
+        string.end());
 }
 
-void strutils::trim(std::string &string)
+void strutils::trim(std::string& string)
 {
     strutils::rtrim(string);
     strutils::ltrim(string);
 }
 
-void strutils::replace_all(std::string &value, const std::string &search, const std::string &replacement)
+void strutils::replace_all(std::string& value, const std::string& search, const std::string& replacement)
 {
     size_t pos = 0;
     while ((pos = value.find(search, pos)) != std::string::npos) {
@@ -50,7 +47,7 @@ void strutils::replace_all(std::string &value, const std::string &search, const 
     }
 }
 
-std::list<std::string> strutils::split(std::string input, const char delimiter)
+auto strutils::split(std::string input, const char delimiter) -> std::list<std::string>
 {
     std::list<std::string> parts;
     size_t pos = 0;
@@ -67,7 +64,7 @@ std::list<std::string> strutils::split(std::string input, const char delimiter)
     return parts;
 }
 
-std::string strutils::subtitles_to_string(const subtitles_t &subtitles)
+auto strutils::subtitles_to_string(const subtitles_t& subtitles) -> std::string
 {
     const std::string indent("    ");
     const std::string indent2 = indent + indent;
@@ -75,12 +72,12 @@ std::string strutils::subtitles_to_string(const subtitles_t &subtitles)
     const std::string indent4 = indent3 + indent;
 
     std::string output("{\n");
-    for (auto subline : subtitles) {
+    for (const auto& subline : subtitles) {
         output += indent + "{\n";
         output += indent2 + std::to_string(subline.start_milis) + ",\n";
         output += indent2 + std::to_string(subline.end_milis) + ",\n";
         output += indent2 + "{\n";
-        for (auto part : subline.parts) {
+        for (const auto& part : subline.parts) {
             output += indent3 + "{\n";
             output += indent4 + std::to_string((long double)part.v_pos) + ",\n";
             output += indent4 + std::to_string(part.x_order) + ",\n";

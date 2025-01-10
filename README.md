@@ -52,7 +52,7 @@ cmake -B build/ -S .
 ```
 You can specify a custom installation destination during this step, like so:
 ```bash
-cmake -B build/ -S . -DCMAKE_INSTALL_PREFIX=/your/prefix/bin
+cmake -B build/ -S . -DCMAKE_INSTALL_PREFIX=/your/prefix
 ```
 4. Build and install the tool:
 ```bash

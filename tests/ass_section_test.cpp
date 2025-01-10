@@ -1,19 +1,22 @@
-#include <stdexcept>
-#include <gtest/gtest.h>
 #include "ass/section.hpp"
+#include <gtest/gtest.h>
+#include <stdexcept>
 
 using namespace ass2srt;
 
-TEST(ass_section, test_parse) {
+TEST(AssSection, TestParse)
+{
     auto res = ass::section::parse("[Events]");
     ASSERT_EQ(res, ass::section::EVENTS);
 }
 
-TEST(ass_section, test_parse_unknown) {
+TEST(AssSection, TestParseUnknown)
+{
     auto res = ass::section::parse("[Unsupported]");
     ASSERT_EQ(res, ass::section::UNKNOWN);
 }
 
-TEST(ass_section, test_parse_invalid) {
+TEST(AssSection, TestParseInvalid)
+{
     ASSERT_THROW(ass::section::parse("whatever"), std::invalid_argument);
 }

@@ -1,10 +1,10 @@
+#include "section.hpp"
 #include <stdexcept>
 #include <string>
-#include "section.hpp"
 
 using namespace ass2srt::ass;
 
-section::Section section::parse(const std::string &value)
+auto section::parse(const std::string& value) -> section::Section
 {
     if (value.length() < 3 || value[0] != '[' || value[value.length() - 1] != ']') {
         throw std::invalid_argument("Invalid section declaration");
