@@ -19,13 +19,10 @@ public:
 
         auto operator<(const time_key& other) const -> bool
         {
-            if (this->start < other.start) {
-                return true;
+            if (this->start == other.start) {
+                return this->end < other.end;
             }
-            if (this->start > other.start) {
-                return false;
-            }
-            return this->end < other.end;
+            return this->start < other.start;
         }
     };
 
