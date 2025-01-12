@@ -3,6 +3,7 @@
 
 #include <list>
 #include <string>
+#include <vector>
 
 namespace ass2srt {
 /**
@@ -47,7 +48,7 @@ struct subline {
     /**
      * Ordered text parts
      */
-    std::list<subline_part> parts;
+    std::vector<subline_part> parts;
 
     /**
      * Compare lines

@@ -4,9 +4,9 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
-#include <list>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 using namespace ass2srt::ass;
 
@@ -28,16 +28,6 @@ inline auto col_value(const std::string& input, const size_t pos) -> std::string
 inline auto text_col_value(const std::string& input, const size_t pos) -> std::string
 {
     return input.substr(pos, input.length() - pos);
-}
-
-template <typename T>
-inline auto get_list_el(const std::list<T>& list, const int pos) -> T
-{
-    auto it = list.begin();
-    for (int i = pos; i > 0; --i) {
-        ++it;
-    }
-    return *it;
 }
 }
 
@@ -132,7 +122,7 @@ auto field::parse_inline_style(const std::string& value) -> field::styles_spec_t
             if (args_list.size() != 2) {
                 throw std::invalid_argument("Invalid arguments count for pos() function");
             }
-            result.explicit_y_pos = std::stoi(get_list_el(args_list, 1));
+            result.explicit_y_pos = std::stoi(args_list[1]);
 
         } else if (fn_name_s == "move") {
             const size_t min_args_cnt = 4;
@@ -143,8 +133,8 @@ auto field::parse_inline_style(const std::string& value) -> field::styles_spec_t
             if (args_list.size() < min_args_cnt || args_list.size() > max_args_cnt) {
                 throw std::invalid_argument("Invalid arguments count for move() function");
             }
-            auto y_begin = std::stoi(get_list_el(args_list, 1));
-            auto y_end = std::stoi(get_list_el(args_list, 3));
+            auto y_begin = std::stoi(args_list[1]);
+            auto y_end = std::stoi(args_list[3]);
             result.explicit_y_pos = static_cast<int>(std::round((y_begin + y_end) / 2.0));
         }
     }
@@ -169,7 +159,7 @@ field::LineValuesParser::LineValuesParser()
     std::memset(&this->dealloc, 0, sizeof(size_t) * (UNKNOWN + 1));
 }
 
-void field::LineValuesParser::parse(const std::list<field::FieldType>& format, const std::string& input_value)
+void field::LineValuesParser::parse(const std::vector<field::FieldType>& format, const std::string& input_value)
 {
     size_t str_pos = 0;
     for (auto field : format) {

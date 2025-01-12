@@ -3,8 +3,8 @@
 #include <algorithm>
 #include <cctype>
 #include <cstdio>
-#include <list>
 #include <string>
+#include <vector>
 
 using namespace ass2srt;
 
@@ -47,9 +47,9 @@ void strutils::replace_all(std::string& value, const std::string& search, const 
     }
 }
 
-auto strutils::split(std::string input, const char delimiter) -> std::list<std::string>
+auto strutils::split(std::string input, const char delimiter) -> std::vector<std::string>
 {
-    std::list<std::string> parts;
+    std::vector<std::string> parts;
     size_t pos = 0;
     std::string token;
     while ((pos = input.find(delimiter)) != std::string::npos) {

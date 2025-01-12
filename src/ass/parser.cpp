@@ -10,11 +10,11 @@
 #include <cstdio>
 #include <cstring>
 #include <istream>
-#include <list>
 #include <memory>
 #include <set>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 using namespace ass2srt::ass::parser;
 
@@ -281,8 +281,8 @@ auto EventDialogueLineState::transition(ass_res_t& value) -> std::unique_ptr<Sta
         return new int(margin_v_i);
     });
 
-    parser.on<std::list<ass_res_t::subline_part_t>>(field::TEXT, [](std::string& value) {
-        auto* parts = new std::list<ass_res_t::subline_part_t>();
+    parser.on<std::vector<ass_res_t::subline_part_t>>(field::TEXT, [](std::string& value) {
+        auto* parts = new std::vector<ass_res_t::subline_part_t>();
         for (size_t part_begin = 0, part_end = 0; part_end + 1 < value.length();) {
             part_end = value.find('{', part_begin + 1);
             if (part_end == std::string::npos) {
@@ -314,7 +314,7 @@ auto EventDialogueLineState::transition(ass_res_t& value) -> std::unique_ptr<Sta
     auto start_millis = parser.get<long>(field::START);
     auto end_millis = parser.get<long>(field::END);
     auto margin_v = parser.get<int>(field::MARGIN_V);
-    auto text_parts = parser.get<std::list<ass_res_t::subline_part_t>>(field::TEXT);
+    auto text_parts = parser.get<std::vector<ass_res_t::subline_part_t>>(field::TEXT);
 
     auto style_name = parser.get<std::string>(field::STYLE);
     auto style_spec_it = value.styles_spec.find(style_name);

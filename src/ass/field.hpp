@@ -4,9 +4,9 @@
 #include "../strutils.hpp"
 #include <array>
 #include <cstdint>
-#include <list>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 // Text align calculation
 #define ALIGN_LEFT 1
@@ -130,7 +130,7 @@ public:
     /**
      * Parse the line
      */
-    void parse(const std::list<field::FieldType>&, const std::string&);
+    void parse(const std::vector<field::FieldType>&, const std::string&);
 
     /**
      * Ge the parsed value

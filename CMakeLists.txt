@@ -41,6 +41,7 @@ set(
     tests/ass_vpos_test.cpp
     tests/ass_test.cpp
     tests/argparser_test.cpp
+    tests/mathutils_test.cpp
     tests/merge_test.cpp
     tests/srt_test.cpp
     tests/statemachine_test.cpp

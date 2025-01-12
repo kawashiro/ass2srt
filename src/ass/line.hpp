@@ -4,9 +4,9 @@
 #include "field.hpp"
 #include <array>
 #include <cstdint>
-#include <list>
 #include <set>
 #include <string>
+#include <vector>
 
 namespace ass2srt::ass::line {
 /**
@@ -58,7 +58,7 @@ auto get_line_value(const std::string&) -> std::string;
 /**
  * Parse section format line
  */
-auto parse_format_declaration(const std::string&, const std::set<std::string>&) -> std::list<field::FieldType>;
+auto parse_format_declaration(const std::string&, const std::set<std::string>&) -> std::vector<field::FieldType>;
 }
 
 #endif

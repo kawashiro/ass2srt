@@ -1,9 +1,9 @@
 #include "merge.hpp"
+#include "mathutils.hpp"
 #include "subline.hpp"
 #include <algorithm>
 #include <cmath>
 #include <iterator>
-#include <limits>
 #include <map>
 #include <string>
 #include <vector>
@@ -185,7 +185,7 @@ auto merge_text(std::vector<subline_part>& parts) -> std::string
     std::ranges::sort(
         parts_copy,
         [](subline_part& first, subline_part& second) {
-            if (std::fabs(first.v_pos - second.v_pos) < std::numeric_limits<float>::epsilon()) {
+            if (mathutils::is_close(first.v_pos, second.v_pos)) {
                 return first.x_order < second.x_order;
             }
             return first.v_pos > second.v_pos;
@@ -194,7 +194,7 @@ auto merge_text(std::vector<subline_part>& parts) -> std::string
     std::string result = parts_copy[0].text;
     float prev_vpos = parts_copy[0].v_pos;
     for (auto it = std::next(parts_copy.begin()); it != parts_copy.end(); ++it) {
-        if (std::fabs(prev_vpos - it->v_pos) < std::numeric_limits<float>::epsilon()) {
+        if (mathutils::is_close(prev_vpos, it->v_pos)) {
             result += it->text;
         } else {
             result += "\n" + it->text;

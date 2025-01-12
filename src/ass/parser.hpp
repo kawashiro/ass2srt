@@ -5,11 +5,11 @@
 #include "../subline.hpp"
 #include "field.hpp"
 #include <istream>
-#include <list>
 #include <memory>
 #include <set>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 // NOLINTBEGIN
 #define PARSER_STATE_CLASS_DECL(NAME)                                             \
@@ -32,8 +32,8 @@ struct ass_res_t {
     std::istream& istream;
     subtitles_t& result;
     std::string token;
-    std::list<field::FieldType> styles_format;
-    std::list<field::FieldType> events_format;
+    std::vector<field::FieldType> styles_format;
+    std::vector<field::FieldType> events_format;
     std::unordered_map<std::string, field::styles_spec_t> styles_spec;
     std::set<std::string> styles_scope;
     std::set<std::string> excluded_styles;

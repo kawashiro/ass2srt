@@ -1,8 +1,8 @@
 #include "strutils.hpp"
 #include "subline.hpp"
 #include <gtest/gtest.h>
-#include <list>
 #include <string>
+#include <vector>
 
 using namespace ass2srt;
 
@@ -24,7 +24,7 @@ TEST(StrUtils, TestSplit)
 {
     const std::string value = "_hello_world_";
     auto res = strutils::split(value, '_');
-    const std::list<std::string> expected { "", "hello", "world", "" };
+    const std::vector<std::string> expected { "", "hello", "world", "" };
     ASSERT_EQ(res, expected);
 }
 

@@ -2,10 +2,10 @@
 #include "../strutils.hpp"
 #include "field.hpp"
 #include <cstddef>
-#include <list>
 #include <set>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 using namespace ass2srt::ass;
 
@@ -35,12 +35,12 @@ auto line::get_line_value(const std::string& input) -> std::string
     return line;
 }
 
-auto line::parse_format_declaration(const std::string& input, const std::set<std::string>& required_fields) -> std::list<field::FieldType>
+auto line::parse_format_declaration(const std::string& input, const std::set<std::string>& required_fields) -> std::vector<field::FieldType>
 {
     auto str_parts = strutils::split(input, ',');
     std::set<std::string> required_fields_tmp = required_fields;
 
-    std::list<field::FieldType> fields;
+    std::vector<field::FieldType> fields;
     std::set<std::string>::iterator t_pos;
     for (const auto& part : str_parts) {
         t_pos = required_fields_tmp.find(part);

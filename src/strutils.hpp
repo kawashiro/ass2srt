@@ -3,10 +3,10 @@
 
 #include "subline.hpp"
 #include <cstdio>
-#include <list>
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 namespace ass2srt::strutils {
 /**
@@ -32,7 +32,7 @@ void replace_all(std::string&, const std::string&, const std::string&);
 /**
  * Split string into parts
  */
-auto split(std::string, char) -> std::list<std::string>;
+auto split(std::string, char) -> std::vector<std::string>;
 
 /**
  * Convert subtitles to string

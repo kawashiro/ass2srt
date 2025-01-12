@@ -1,8 +1,8 @@
 #include "ass/field.hpp"
 #include "ass/line.hpp"
 #include <gtest/gtest.h>
-#include <list>
 #include <stdexcept>
+#include <vector>
 
 using namespace ass2srt;
 
@@ -32,7 +32,7 @@ TEST(AssLine, TestGetLineValue)
 TEST(AssLine, TestParseFormatDeclaration)
 {
     auto res = ass::line::parse_format_declaration("Name, Start, End", {});
-    const std::list<ass::field::FieldType> expected { ass::field::NAME, ass::field::START, ass::field::END };
+    const std::vector<ass::field::FieldType> expected { ass::field::NAME, ass::field::START, ass::field::END };
     ASSERT_EQ(res, expected);
 }
 
