@@ -37,6 +37,7 @@ public:
     using subs_vec = std::vector<subline_part_ext_t>;
     using iterator = std::map<time_key, subs_vec>::iterator;
     using const_iterator = std::map<time_key, subs_vec>::const_iterator;
+    using cls = NonIntersectedSubtitlesList;
 
     explicit NonIntersectedSubtitlesList()
         : time_map({})
@@ -105,7 +106,7 @@ private:
         this->time_map.erase(curr_key);
 
         this->append0(left_key.start, curr_key.start, left_parts);
-        this->append0(curr_key.start, std::min(left_key.end, curr_key.end), NonIntersectedSubtitlesList::concat(left_parts, curr_parts));
+        this->append0(curr_key.start, std::min(left_key.end, curr_key.end), cls::concat(left_parts, curr_parts));
         this->append0(left_key.end, curr_key.end, curr_parts);
         this->append0(curr_key.end, left_key.end, left_parts);
 
@@ -137,7 +138,7 @@ private:
             this->time_map.erase(effective_curr_key);
             this->time_map.erase(right_part_it);
             this->append0(effective_curr_key.start, right_key.start, curr_parts);
-            this->append0(right_key.start, std::min(right_key.end, effective_curr_key.end), NonIntersectedSubtitlesList::concat(right_parts, curr_parts));
+            this->append0(right_key.start, std::min(right_key.end, effective_curr_key.end), cls::concat(right_parts, curr_parts));
 
             if (right_key.end < effective_curr_key.end) {
                 this->append0(right_key.end, effective_curr_key.end, curr_parts);
