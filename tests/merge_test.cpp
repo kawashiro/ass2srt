@@ -126,6 +126,33 @@ static const subtitles_t input {
             },
         },
     },
+    {
+        77,
+        80,
+        {
+            {
+                0.0,
+                0,
+                "Long line on top of short line",
+            },
+        },
+    },
+    {
+        81,
+        82,
+        {
+            {
+                0.0,
+                2,
+                "This should be the second",
+            },
+            {
+                0.0,
+                1,
+                "This should be the first",
+            },
+        },
+    },
 };
 
 static const subtitles_t expected {
@@ -279,18 +306,40 @@ static const subtitles_t expected {
             {
                 0.0,
                 0,
-                "Short lineLong line on top of short line",
+                "Long line on top of short lineShort line",
             },
         },
     },
     {
         76,
+        77,
+        {
+            {
+                0.0,
+                0,
+                "Long line on top of short line",
+            },
+        },
+    },
+    {
+        77,
         80,
         {
             {
                 0.0,
                 0,
                 "Long line on top of short line",
+            },
+        },
+    },
+    {
+        81,
+        82,
+        {
+            {
+                0.0,
+                0,
+                "This should be the firstThis should be the second",
             },
         },
     },

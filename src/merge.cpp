@@ -5,12 +5,20 @@
 #include <cmath>
 #include <iterator>
 #include <map>
+#include <set>
 #include <string>
 #include <vector>
 
 using namespace ass2srt;
 
 namespace {
+struct subline_part_ext_t {
+    long original_start;
+    float v_pos;
+    int x_order;
+    std::string text;
+};
+
 class NonIntersectedSubtitlesList {
 public:
     struct time_key {
@@ -26,7 +34,7 @@ public:
         }
     };
 
-    using subs_vec = std::vector<subline_part>;
+    using subs_vec = std::vector<subline_part_ext_t>;
     using iterator = std::map<time_key, subs_vec>::iterator;
     using const_iterator = std::map<time_key, subs_vec>::const_iterator;
 
@@ -44,7 +52,9 @@ public:
     void append(const long start, const long end, const subline_part& part)
     {
         time_key curr_key { .start = start, .end = end };
-        const subs_vec curr_parts = this->append0(curr_key.start, curr_key.end, { part });
+        const subline_part_ext_t part_ext { .original_start = start, .v_pos = part.v_pos, .x_order = part.x_order, .text = part.text };
+
+        const subs_vec curr_parts = this->append0(curr_key.start, curr_key.end, { part_ext });
 
         curr_key.start = this->merge_left(curr_key, curr_parts);
         this->merge_right(curr_key, curr_parts);
@@ -107,43 +117,35 @@ private:
      */
     void merge_right(const time_key& curr_key, const subs_vec& curr_parts)
     {
-        struct to_append_t {
-            long start;
-            long end;
-            subs_vec parts;
-        };
-        std::vector<time_key> to_erase {};
-        std::vector<to_append_t> to_append {};
-
         time_key effective_curr_key(curr_key.start, curr_key.end);
-        for (auto right_part_it = std::next(this->time_map.find(effective_curr_key)); right_part_it != this->time_map.end(); ++right_part_it) {
+        for (;;) {
+            auto curr_part_it = this->time_map.find(effective_curr_key);
+            if (curr_part_it == this->time_map.end()) {
+                break;
+            }
+            auto right_part_it = std::next(curr_part_it);
+            if (right_part_it == this->time_map.end()) {
+                break;
+            }
+
             const subs_vec right_parts = right_part_it->second;
             const time_key right_key = right_part_it->first;
             if (right_key.start >= effective_curr_key.end) {
                 break;
             }
 
-            to_erase.push_back(right_key);
-            to_append.push_back({ effective_curr_key.start, right_key.start, curr_parts });
-            to_append.push_back({ right_key.start, std::min(right_key.end, effective_curr_key.end), NonIntersectedSubtitlesList::concat(right_parts, curr_parts) });
+            this->time_map.erase(effective_curr_key);
+            this->time_map.erase(right_part_it);
+            this->append0(effective_curr_key.start, right_key.start, curr_parts);
+            this->append0(right_key.start, std::min(right_key.end, effective_curr_key.end), NonIntersectedSubtitlesList::concat(right_parts, curr_parts));
 
             if (right_key.end < effective_curr_key.end) {
-                to_append.push_back({ right_key.end, effective_curr_key.end, curr_parts });
+                this->append0(right_key.end, effective_curr_key.end, curr_parts);
                 effective_curr_key.start = right_key.end;
             } else {
-                to_append.push_back({ effective_curr_key.end, right_key.end, right_parts });
+                this->append0(effective_curr_key.end, right_key.end, right_parts);
                 effective_curr_key.start = effective_curr_key.end;
             }
-        }
-        if (!to_erase.empty()) {
-            to_erase.push_back(curr_key);
-        }
-
-        for (auto erase : to_erase) {
-            this->time_map.erase(erase);
-        }
-        for (const auto& append : to_append) {
-            this->append0(append.start, append.end, append.parts);
         }
     }
 
@@ -175,17 +177,29 @@ private:
     }
 };
 
-auto merge_text(std::vector<subline_part>& parts) -> std::string
+auto merge_text(std::vector<subline_part_ext_t>& parts) -> std::string
 {
     if (parts.empty()) {
         return "";
     }
 
-    auto parts_copy = parts;
+    std::vector<subline_part_ext_t> parts_copy;
+    std::set<std::string> met;
+    for (const auto& part : parts) {
+        if (met.contains(part.text)) {
+            continue;
+        }
+        parts_copy.push_back(part);
+        met.insert(part.text);
+    }
+
     std::ranges::sort(
         parts_copy,
-        [](subline_part& first, subline_part& second) {
+        [](subline_part_ext_t& first, subline_part_ext_t& second) {
             if (mathutils::is_close(first.v_pos, second.v_pos)) {
+                if (first.original_start < second.original_start) {
+                    return true;
+                }
                 return first.x_order < second.x_order;
             }
             return first.v_pos > second.v_pos;
