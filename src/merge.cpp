@@ -163,7 +163,7 @@ private:
             return parts;
         }
 
-        subs_vec merged_parts = NonIntersectedSubtitlesList::concat(curr_part_it->second, parts);
+        subs_vec merged_parts = cls::concat(curr_part_it->second, parts);
         this->time_map[curr_key] = merged_parts;
         return merged_parts;
     }
