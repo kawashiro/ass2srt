@@ -7,7 +7,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project(
     ass2srt
-    VERSION 1.0.4
+    VERSION 1.0.5
     DESCRIPTION "Convert ASS subtitles toi SRT format easily keeping readability as much as possible"
     HOMEPAGE_URL "https://github.com/kawashiro/ass2srt"
 )

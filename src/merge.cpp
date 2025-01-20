@@ -81,6 +81,11 @@ public:
         return this->time_map.cend();
     }
 
+    [[nodiscard]] auto empty() const -> bool
+    {
+        return this->time_map.empty();
+    }
+
 private:
     std::map<time_key, subs_vec> time_map;
 
@@ -234,11 +239,23 @@ auto merge::merge_subtitles_parts(const subtitles_t& input) -> subtitles_t
     }
 
     subtitles_t result;
+    if (subtitles_by_time_breaks.empty()) {
+        return result;
+    }
+
+    std::string prev_text;
+    long prev_end = -1;
     for (auto merged_subtitles : subtitles_by_time_breaks) {
         const std::string merged_text = merge_text(merged_subtitles.second);
-        const subline_part part { .v_pos = 0.0, .x_order = 0, .text = merged_text };
-        const subline merged_line { .start_milis = merged_subtitles.first.start, .end_milis = merged_subtitles.first.end, .parts = { part } };
-        result.push_back(merged_line);
+        if (prev_end == merged_subtitles.first.start && merged_text == prev_text) {
+            result.back().end_milis = merged_subtitles.first.end;
+        } else {
+            const subline_part part { .v_pos = 0.0, .x_order = 0, .text = merged_text };
+            const subline merged_line { .start_milis = merged_subtitles.first.start, .end_milis = merged_subtitles.first.end, .parts = { part } };
+            result.push_back(merged_line);
+            prev_text = merged_text;
+        }
+        prev_end = merged_subtitles.first.end;
     }
 
     return result;

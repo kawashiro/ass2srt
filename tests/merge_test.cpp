@@ -312,17 +312,6 @@ static const subtitles_t expected {
     },
     {
         76,
-        77,
-        {
-            {
-                0.0,
-                0,
-                "Long line on top of short line",
-            },
-        },
-    },
-    {
-        77,
         80,
         {
             {
@@ -349,4 +338,10 @@ TEST(Merge, TestMergeSubtitlesParts)
 {
     auto result = merge::merge_subtitles_parts(input);
     ASSERT_EQ(result, expected) << "Subtitles did not match. Actual result: " << strutils::subtitles_to_string(result);
+}
+
+TEST(Merge, TestMergeEmptySubtitlesParts)
+{
+    auto result = merge::merge_subtitles_parts({ { 1, 2, { { 0.1, 1, "" } } } });
+    ASSERT_TRUE(result.empty());
 }
