@@ -28,7 +28,7 @@ auto main(int argc, char** argv) -> int
             throw std::runtime_error(strutils::format("Failed to open input file %s: %s", params.input_file.c_str(), std::strerror(errno)));
         }
 
-        std::ofstream output_file(params.output_file, std::ios_base::out);
+        std::ofstream output_file(params.output_file, std::ios_base::out | std::ios_base::binary);
         if (output_file.fail()) {
             throw std::runtime_error(strutils::format("Failed to open output file %s: %s", params.output_file.c_str(), std::strerror(errno)));
         }
