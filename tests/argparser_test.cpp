@@ -30,7 +30,7 @@ TEST_F(ParseArgsTest, ParseArgsNormal)
     EXPECT_EQ(result.styles_scope, expected_styles_scope);
     EXPECT_EQ(result.excluded_styles, expected_excluded_styles);
     EXPECT_TRUE(result.exclude_signs);
-    EXPECT_TRUE(result.is_valid());
+    EXPECT_TRUE(result.valid());
     EXPECT_FALSE(result.has_extra_opts);
 }
 
@@ -41,7 +41,7 @@ TEST_F(ParseArgsTest, ParseArgsExtraOpts)
 
     auto result = argparser::parse_args(input_argc, (char**)input_argv);
     EXPECT_TRUE(result.has_extra_opts);
-    EXPECT_FALSE(result.is_valid());
+    EXPECT_FALSE(result.valid());
 }
 
 TEST_F(ParseArgsTest, ParseArgsMissingInput)
@@ -50,7 +50,7 @@ TEST_F(ParseArgsTest, ParseArgsMissingInput)
     const char* input_argv[] = { "ass2srt", "-o", "/tmp/output.srt", 0 };
 
     auto result = argparser::parse_args(input_argc, (char**)input_argv);
-    EXPECT_FALSE(result.is_valid());
+    EXPECT_FALSE(result.valid());
 }
 
 TEST_F(ParseArgsTest, ParseArgsMissingOutput)
@@ -59,5 +59,5 @@ TEST_F(ParseArgsTest, ParseArgsMissingOutput)
     const char* input_argv[] = { "ass2srt", "-i", "/tmp/input.srt", 0 };
 
     auto result = argparser::parse_args(input_argc, (char**)input_argv);
-    EXPECT_FALSE(result.is_valid());
+    EXPECT_FALSE(result.valid());
 }

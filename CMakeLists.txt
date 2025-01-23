@@ -28,6 +28,7 @@ set(
     src/ass/section.cpp
     src/ass/vpos.cpp
     src/argparser.cpp
+    src/io.cpp
     src/merge.cpp
     src/srt.cpp
     src/strutils.cpp

@@ -28,7 +28,7 @@ auto split_set_arg(char* input) -> std::set<std::string>
 }
 }
 
-auto argparser::args::is_valid() const -> bool
+auto argparser::args::valid() const -> bool
 {
     return !this->has_extra_opts && !this->input_file.empty() && !this->output_file.empty();
 }

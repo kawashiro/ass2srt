@@ -42,7 +42,7 @@ struct args {
     /**
      * Check the validness
      */
-    [[nodiscard]] auto is_valid() const -> bool;
+    [[nodiscard]] auto valid() const -> bool;
 };
 
 /**
