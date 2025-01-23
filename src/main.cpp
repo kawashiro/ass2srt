@@ -13,7 +13,7 @@ using namespace ass2srt;
 
 auto main(int argc, char** argv) -> int
 {
-    const argparser::args params = argparser::parse_args(argc, argv);
+    auto params = argparser::parse_args(argc, argv);
     if (!params.valid()) {
         printf("ass2srt converter v%d.%d.%d\n", ASS2SRT_VERSION_MAJOR, ASS2SRT_VERSION_MINOR, ASS2SRT_VERSION_PATCH);
         printf("Usage: ass2srt -i input_file -o output_file [-s styles_to_display] [-e excluded_styles] [ -x ]\n");
