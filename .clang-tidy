@@ -21,7 +21,8 @@ Checks: >
   -cppcoreguidelines-avoid-const-or-ref-data-members,
   -cppcoreguidelines-pro-bounds-pointer-arithmetic,
   -concurrency-mt-unsafe,
-  -modernize-use-std-print
+  -modernize-use-std-print,
+  -cert-err33-c
 WarningsAsErrors: '*'
 HeaderFileExtensions:
   - ''

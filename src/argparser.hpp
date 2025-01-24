@@ -35,6 +35,11 @@ struct args {
     const bool exclude_signs;
 
     /**
+     * Show help message and exit
+     */
+    const bool show_help;
+
+    /**
      * If there are any extra options
      */
     const bool has_extra_opts;

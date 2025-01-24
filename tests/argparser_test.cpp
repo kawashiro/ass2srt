@@ -43,21 +43,3 @@ TEST_F(ParseArgsTest, ParseArgsExtraOpts)
     EXPECT_TRUE(result.has_extra_opts);
     EXPECT_FALSE(result.valid());
 }
-
-TEST_F(ParseArgsTest, ParseArgsMissingInput)
-{
-    const int input_argc = 3;
-    const char* input_argv[] = { "ass2srt", "-o", "/tmp/output.srt", 0 };
-
-    auto result = argparser::parse_args(input_argc, (char**)input_argv);
-    EXPECT_FALSE(result.valid());
-}
-
-TEST_F(ParseArgsTest, ParseArgsMissingOutput)
-{
-    const int input_argc = 3;
-    const char* input_argv[] = { "ass2srt", "-i", "/tmp/input.srt", 0 };
-
-    auto result = argparser::parse_args(input_argc, (char**)input_argv);
-    EXPECT_FALSE(result.valid());
-}

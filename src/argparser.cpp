@@ -30,7 +30,7 @@ auto split_set_arg(char* input) -> std::set<std::string>
 
 auto argparser::args::valid() const -> bool
 {
-    return !this->has_extra_opts && !this->input_file.empty() && !this->output_file.empty();
+    return !this->has_extra_opts;
 }
 
 auto argparser::parse_args(int argc, char** argv) -> argparser::args
@@ -41,9 +41,10 @@ auto argparser::parse_args(int argc, char** argv) -> argparser::args
     std::set<std::string> excluded_styles {};
     bool exclude_signs = false;
     bool has_extra_opt = false;
+    bool show_help = false;
 
     int opt = -1;
-    while ((opt = getopt(argc, argv, "i:o:s:e:x")) != -1) { // NOLINT
+    while ((opt = getopt(argc, argv, "i:o:s:e:xh")) != -1) { // NOLINT
         switch (opt) {
         case 'i':
             input_file = optarg; // NOLINT
@@ -60,6 +61,9 @@ auto argparser::parse_args(int argc, char** argv) -> argparser::args
         case 'x':
             exclude_signs = true;
             break;
+        case 'h':
+            show_help = true;
+            break;
         default:
             has_extra_opt = true;
         }
@@ -71,6 +75,7 @@ auto argparser::parse_args(int argc, char** argv) -> argparser::args
         .styles_scope = styles_scope,
         .excluded_styles = excluded_styles,
         .exclude_signs = exclude_signs,
+        .show_help = show_help,
         .has_extra_opts = has_extra_opt
     };
 }
