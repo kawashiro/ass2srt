@@ -19,6 +19,17 @@ struct subline_part_ext_t {
     std::string text;
 };
 
+using subs_vec = std::vector<subline_part_ext_t>;
+
+auto subs_vec_concat(const subs_vec& first, const subs_vec& second) -> subs_vec
+{
+    subs_vec res(first);
+    for (const auto& to_add : second) {
+        res.push_back(to_add);
+    }
+    return res;
+}
+
 class NonIntersectedSubtitlesList {
 public:
     struct time_key {
@@ -34,10 +45,8 @@ public:
         }
     };
 
-    using subs_vec = std::vector<subline_part_ext_t>;
     using iterator = std::map<time_key, subs_vec>::iterator;
     using const_iterator = std::map<time_key, subs_vec>::const_iterator;
-    using cls = NonIntersectedSubtitlesList;
 
     explicit NonIntersectedSubtitlesList()
         : time_map({})
@@ -111,7 +120,7 @@ private:
         this->time_map.erase(curr_key);
 
         this->append0(left_key.start, curr_key.start, left_parts);
-        this->append0(curr_key.start, std::min(left_key.end, curr_key.end), cls::concat(left_parts, curr_parts));
+        this->append0(curr_key.start, std::min(left_key.end, curr_key.end), subs_vec_concat(left_parts, curr_parts));
         this->append0(left_key.end, curr_key.end, curr_parts);
         this->append0(curr_key.end, left_key.end, left_parts);
 
@@ -143,7 +152,7 @@ private:
             this->time_map.erase(effective_curr_key);
             this->time_map.erase(right_part_it);
             this->append0(effective_curr_key.start, right_key.start, curr_parts);
-            this->append0(right_key.start, std::min(right_key.end, effective_curr_key.end), cls::concat(right_parts, curr_parts));
+            this->append0(right_key.start, std::min(right_key.end, effective_curr_key.end), subs_vec_concat(right_parts, curr_parts));
 
             if (right_key.end < effective_curr_key.end) {
                 this->append0(right_key.end, effective_curr_key.end, curr_parts);
@@ -168,18 +177,9 @@ private:
             return parts;
         }
 
-        subs_vec merged_parts = cls::concat(curr_part_it->second, parts);
+        subs_vec merged_parts = subs_vec_concat(curr_part_it->second, parts);
         this->time_map[curr_key] = merged_parts;
         return merged_parts;
-    }
-
-    static auto concat(const subs_vec& first, const subs_vec& second) -> subs_vec
-    {
-        subs_vec res(first);
-        for (const auto& to_add : second) {
-            res.push_back(to_add);
-        }
-        return res;
     }
 };
 
