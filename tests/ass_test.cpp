@@ -41,7 +41,7 @@ static const char* const good_file_content = ("\xEF\xBB\xBF[Script Info]\n"
                                               "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\n"
                                               "Dialogue: 0,0:00:00.14,0:00:04.60,Signs,,0000,0000,0000,,This is {\\blur0.3\\fad(500,500)\\fs48\\b1\\c&H6133B5&\\pos(700,700)}Some complex string,{\\pos(1,2)} yo!\n"
                                               "Comment: Some ignored line\n"
-                                              "Dialogue: 0,0:00:11.28,0:00:12.50,Default,,0000,0000,0000,,And this is a simple one...\n");
+                                              "Dialogue: 0,0:00:11.28,0:00:12.50,Default,,0000,0000,0000,,And this is a {\\pos(700,700)}simple {\\otherStyle}one...\n");
 
 static const char* const styles_format_redeclared_file_content = ("[V4+ Styles]\n"
                                                                   "Format: Name, Fontname, Fontsize, Alignment, MarginV\n"
@@ -128,7 +128,17 @@ static const subtitles_t good_file_result {
             {
                 0.0444444455,
                 0,
-                "And this is a simple one...",
+                "And this is a ",
+            },
+            {
+                0.027777791,
+                1,
+                "simple ",
+            },
+            {
+                0.027777791,
+                2,
+                "one...",
             },
         },
     },

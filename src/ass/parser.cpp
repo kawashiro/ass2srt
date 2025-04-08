@@ -283,6 +283,7 @@ auto EventDialogueLineState::transition(ass_res_t& value) -> std::unique_ptr<Sta
 
     parser.on<std::vector<ass_res_t::subline_part_t>>(field::TEXT, [](std::string& value) {
         auto* parts = new std::vector<ass_res_t::subline_part_t>();
+        int prev_explicit_y_pos = -1;
         for (size_t part_begin = 0, part_end = 0; part_end + 1 < value.length();) {
             part_end = value.find('{', part_begin + 1);
             if (part_end == std::string::npos) {
@@ -295,6 +296,10 @@ auto EventDialogueLineState::transition(ass_res_t& value) -> std::unique_ptr<Sta
                 auto style_end = current_part.find('}') + 1;
                 auto style_spec = current_part.substr(0, style_end); // {\style}
                 parsed_part.inline_style = ass::field::parse_inline_style(style_spec);
+                if (parsed_part.inline_style.explicit_y_pos == -1 && prev_explicit_y_pos != -1) {
+                    parsed_part.inline_style.explicit_y_pos = prev_explicit_y_pos;
+                }
+                prev_explicit_y_pos = parsed_part.inline_style.explicit_y_pos;
                 parsed_part.text = field::parse_plain_text(current_part.substr(style_end, current_part.length() - style_end)); // Text
             } else {
                 parsed_part.text = field::parse_plain_text(current_part); // Text
