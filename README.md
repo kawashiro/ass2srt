@@ -13,6 +13,8 @@ The most common scenario is simply running the following command to convert an A
 
 ```bash
 ass2srt -i /path/to/input/file.ass -o /path/to/output/file.srt
+# ... or to launch the graphic interface
+ass2srt-ui
 ```
 
 ### Additional options
@@ -53,6 +55,11 @@ cmake -B build/ -S .
 You can specify a custom installation destination during this step, like so:
 ```bash
 cmake -B build/ -S . -DCMAKE_INSTALL_PREFIX=/your/prefix
+```
+If you wish to build a QT6-based UI, you need to install additional dependencies and pass more configuration options
+```bash
+apt install qt6-base-dev libxkbcommon-dev
+cmake -B build/ -S . -DCMAKE_INSTALL_PREFIX=/your/prefix -DASS2SRT_BUILD_UI=true
 ```
 4. Build and install the tool:
 ```bash

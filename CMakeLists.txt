@@ -7,7 +7,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project(
     ass2srt
-    VERSION 1.1.1
+    VERSION 1.2.0
     DESCRIPTION "Convert ASS subtitles toi SRT format easily keeping readability as much as possible"
     HOMEPAGE_URL "https://github.com/kawashiro/ass2srt"
 )
@@ -18,6 +18,8 @@ endif()
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
+
+configure_file(src/config.h.in src/config.h)
 
 set(
     ASS2SRT_SOURCES
@@ -50,8 +52,29 @@ set(
     tests/subline_test.cpp
 )
 
+set(
+    ASS2SRT_UI_SOURCES
+    src/ui/mainwindow.ui
+    src/ui/mainwindow.cpp
+    src/mainui.cpp
+)
+
+if (ASS2SRT_BUILD_UI)
+    set(CMAKE_AUTOUIC ON)
+    set(CMAKE_AUTOMOC ON)
+    set(CMAKE_AUTORCC ON)
+    find_package(Qt6 REQUIRED COMPONENTS Widgets)
+    qt_standard_project_setup()
+
+    qt_add_executable(ass2srt-ui ${ASS2SRT_SOURCES} ${ASS2SRT_UI_SOURCES})
+    target_include_directories(ass2srt-ui PRIVATE "${PROJECT_BINARY_DIR}/src")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--whole-archive -lbz2 -lbrotlidec -lbrotlicommon -Wl,--no-whole-archive")
+    target_link_libraries(ass2srt-ui PRIVATE freetype png z Qt6::Widgets)
+    set_target_properties(ass2srt-ui PROPERTIES WIN32_EXECUTABLE ON)
+    install(TARGETS ass2srt-ui DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
+endif()
+
 add_executable(ass2srt ${ASS2SRT_SOURCES} src/main.cpp)
-configure_file(src/config.h.in src/config.h)
 target_include_directories(ass2srt PRIVATE "${PROJECT_BINARY_DIR}/src")
 add_compile_options(-Wall -Wextra -Wpedantic)
 string(APPEND CMAKE_CXX_FLAGS_DEBUG " -O0 -ggdb --coverage")

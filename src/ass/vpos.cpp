@@ -1,4 +1,3 @@
-// #include <cmath>
 #include "vpos.hpp"
 #include "../strutils.hpp"
 #include "field.hpp"
