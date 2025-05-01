@@ -14,7 +14,7 @@ The most common scenario is simply running the following command to convert an A
 ```bash
 ass2srt -i /path/to/input/file.ass -o /path/to/output/file.srt
 # ... or to launch the graphic interface
-ass2srt-ui
+ass2srt-gui
 ```
 
 ### Additional options
