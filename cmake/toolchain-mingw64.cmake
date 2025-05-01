@@ -6,7 +6,7 @@ set(CMAKE_SYSTEM_PROCESSOR x86_64)
 set(CMAKE_C_COMPILER "${MXE_PATH}/usr/bin/i686-w64-mingw32.static-gcc")
 set(CMAKE_CXX_COMPILER "${MXE_PATH}/usr/bin/i686-w64-mingw32.static-g++")
 set(CMAKE_RC_COMPILER "${MXE_PATH}/usr/bin/i686-w64-mingw32.static-windres")
-include_directories(BEFORE SYSTEM "/home/kz/.mxe/usr/i686-w64-mingw32.static/include")
+include_directories(BEFORE SYSTEM "${MXE_PATH}/usr/i686-w64-mingw32.static/include")
 
 # where is the target environment
 set(CMAKE_FIND_ROOT_PATH "${MXE_PATH}/usr/i686-w64-mingw32.static")

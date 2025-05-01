@@ -13,17 +13,6 @@
   <property name="windowTitle">
    <string>ASS to SRT Converter</string>
   </property>
-  <property name="windowIcon">
-   <iconset>
-    <normaloff>../../res/icon.png</normaloff>
-    <normalon>../../res/icon.png</normalon>
-    <disabledoff>../../res/icon.png</disabledoff>
-    <disabledon>../../res/icon.png</disabledon>
-    <activeoff>../../res/icon.png</activeoff>
-    <activeon>../../res/icon.png</activeon>
-    <selectedoff>../../res/icon.png</selectedoff>
-    <selectedon>../../res/icon.png</selectedon>../../res/icon.png</iconset>
-  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>

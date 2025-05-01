@@ -2,6 +2,7 @@
 #include "strutils.hpp"
 #include <cerrno>
 #include <cstring>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <memory>
@@ -18,7 +19,7 @@ using namespace ass2srt;
         }                                                                                                     \
     } while (0)
 
-auto io::open_istream(const std::string& file_path) -> std::shared_ptr<std::istream>
+auto io::open_istream(const std::filesystem::path& file_path) -> std::shared_ptr<std::istream>
 {
     if (file_path.empty()) {
         return { &std::cin, [](std::istream*) { } };
@@ -29,7 +30,7 @@ auto io::open_istream(const std::string& file_path) -> std::shared_ptr<std::istr
     return input_file;
 }
 
-auto io::open_ostream(const std::string& file_path) -> std::shared_ptr<std::ostream>
+auto io::open_ostream(const std::filesystem::path& file_path) -> std::shared_ptr<std::ostream>
 {
     if (file_path.empty()) {
         return { &std::cout, [](std::ostream*) { } };
