@@ -11,7 +11,7 @@ using namespace ass2srt::ui;
 
 void MainWindow::selectAssFiles()
 {
-    assFiles = QFileDialog::getOpenFileNames(this, "Select .ASS siles", QString(), "ASS files (*.ass)"); // NOLINT
+    assFiles = QFileDialog::getOpenFileNames(this, "Select .ASS siles", QString(), "ASS files (*.ass)");
 #ifdef WIN32
     for (auto& assFile : assFiles) {
         assFile.replace('/', '\\');
@@ -24,7 +24,7 @@ void MainWindow::selectAssFiles()
 
 void MainWindow::selectOutputDir()
 {
-    outputDirectory = QFileDialog::getExistingDirectory(this, "Select .SRT files output directory"); // NOLINT
+    outputDirectory = QFileDialog::getExistingDirectory(this, "Select .SRT files output directory");
 #ifdef WIN32
     outputDirectory.replace('/', '\\');
 #endif
