@@ -10,5 +10,5 @@ auto main(int argc, char** argv) -> int
 
     window.show();
 
-    return app.exec(); // NOLINT
+    return QApplication::exec();
 }

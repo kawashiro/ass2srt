@@ -1,0 +1,50 @@
+---
+Checks: >
+  bugprone-*,
+  cert-*,
+  concurrency-*,
+  cppcoreguidelines-*,
+  hicpp-*,misc-*,
+  modernize-*,
+  performance-*,
+  readability-*,
+  -cppcoreguidelines-owning-memory,
+  -cppcoreguidelines-macro-usage,
+  -bugprone-easily-swappable-parameters,
+  -cppcoreguidelines-pro-type-vararg,
+  -hicpp-vararg,
+  -cert-err34-c,
+  -cppcoreguidelines-pro-bounds-constant-array-index,
+  -cppcoreguidelines-pro-type-reinterpret-cast,
+  -hicpp-named-parameter,
+  -readability-named-parameter,
+  -cppcoreguidelines-avoid-const-or-ref-data-members,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+  -concurrency-mt-unsafe,
+  -modernize-use-std-print,
+  -cert-err33-c,
+  -misc-include-cleaner
+WarningsAsErrors: '*'
+HeaderFileExtensions:
+  - ''
+  - h
+  - hh
+  - hpp
+  - hxx
+ImplementationFileExtensions:
+  - c
+  - cc
+  - cpp
+  - cxx
+HeaderFilterRegex: ''
+ExcludeHeaderFilterRegex: ''
+FormatStyle: webkit
+CheckOptions:
+  readability-function-cognitive-complexity.Threshold: 50
+  readability-identifier-length.IgnoredVariableNames: '^it$'
+  readability-simplify-boolean-expr.IgnoreMacros: true
+  readability-magic-numbers.IgnoredFloatingPointValues: '1.0;100.0;2.0;0.5'
+  cppcoreguidelines-avoid-magic-numbers.IgnoredFloatingPointValues: '1.0;100.0;2.0;0.5'
+  cppcoreguidelines-avoid-do-while.IgnoreMacros: true
+  misc-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic: true
+SystemHeaders: false

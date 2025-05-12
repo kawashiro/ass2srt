@@ -1,10 +1,10 @@
 #include "mainwindow.hpp"
-#include "../ass.hpp" // NOLINT
-#include "../io.hpp" // NOLINT
-#include "../merge.hpp" // NOLINT
-#include "../srt.hpp" // NOLINT
+#include "../ass.hpp"
+#include "../io.hpp"
+#include "../merge.hpp"
+#include "../srt.hpp"
 #include <QFileDialog>
-#include <QtWidgets> // NOLINT
+#include <QtWidgets>
 #include <stdexcept>
 
 using namespace ass2srt::ui;
@@ -38,13 +38,13 @@ void MainWindow::processFiles()
     ui.progressBar->setValue(0);
     ui.processButton->setEnabled(false);
 
-    QString lastFile; // NOLINT
+    QString lastFile;
     try {
-        int progress = 0; // NOLINT
+        int progress = 0;
 
         for (const auto& file : assFiles) {
             lastFile = file;
-            const QFileInfo fileInfo(file); // NOLINT
+            const QFileInfo fileInfo(file);
             const QString baseName = fileInfo.completeBaseName();
             const QString srtFilePath = QDir(outputDirectory).filePath(baseName + ".srt");
 #ifdef WIN32
@@ -63,15 +63,15 @@ void MainWindow::processFiles()
             srt::write_srt_stream(merged_lines, *output_file);
 
             ui.progressBar->setValue(++progress);
-            QApplication::processEvents(); // NOLINT
+            QApplication::processEvents();
         }
 
-        QMessageBox::information(this, "Success", "All files are processed successfully!"); // NOLINT
+        QMessageBox::information(this, "Success", "All files are processed successfully!");
 
     } catch (const std::runtime_error& e) {
-        QMessageBox::critical(this, "Error", QString("Error processing the file %1: %2").arg(lastFile, e.what())); // NOLINT
+        QMessageBox::critical(this, "Error", QString("Error processing the file %1: %2").arg(lastFile, e.what()));
         ui.progressBar->setValue(0);
-        QApplication::processEvents(); // NOLINT
+        QApplication::processEvents();
     }
 
     enableConversionIfNeded();
