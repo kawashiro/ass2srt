@@ -107,7 +107,7 @@ static const subtitles_t good_file_result {
             {
                 0.5,
                 0,
-                "This is ",
+                "This is",
             },
             {
                 0.027777778,
@@ -117,7 +117,7 @@ static const subtitles_t good_file_result {
             {
                 0.997222245,
                 2,
-                " yo!",
+                "yo!",
             },
         },
     },
@@ -128,12 +128,12 @@ static const subtitles_t good_file_result {
             {
                 0.0444444455,
                 0,
-                "And this is a ",
+                "And this is a",
             },
             {
                 0.027777791,
                 1,
-                "simple ",
+                "simple",
             },
             {
                 0.027777791,

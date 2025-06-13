@@ -146,6 +146,8 @@ auto field::parse_plain_text(const std::string& value) -> std::string
 {
     std::string out = value;
     strutils::replace_all(out, "\\N", "\n");
+    strutils::trim(out);
+    strutils::replace_all(out, "\n\n", "\n");
     return out;
 }
 

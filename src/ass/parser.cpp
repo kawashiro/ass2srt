@@ -292,7 +292,7 @@ auto EventDialogueLineState::transition(ass_res_t& value) -> std::unique_ptr<Sta
             auto current_part = value.substr(part_begin, part_end - part_begin); // {\style}Text
 
             ass_res_t::subline_part_t parsed_part;
-            if (current_part.at(0) == '{') {
+            if (current_part.at(0) == '{' && current_part.find('}') != std::string::npos) {
                 auto style_end = current_part.find('}') + 1;
                 auto style_spec = current_part.substr(0, style_end); // {\style}
                 parsed_part.inline_style = ass::field::parse_inline_style(style_spec);
