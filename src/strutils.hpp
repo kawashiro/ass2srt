@@ -25,6 +25,11 @@ void rtrim(std::string&);
 void trim(std::string&);
 
 /**
+ * Deduplicate EOL char
+ */
+auto dedup_eol(const std::string&) -> std::string;
+
+/**
  * Replace all the occurences of the string
  */
 void replace_all(std::string&, const std::string&, const std::string&);

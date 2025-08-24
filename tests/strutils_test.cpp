@@ -34,6 +34,12 @@ TEST(StrUtils, TestFormat)
     ASSERT_EQ(res, "Hello, world! (42)");
 }
 
+TEST(StrUtils, TestDedupEol)
+{
+    auto res = strutils::dedup_eol("Hello,\nworld\n\n\nGood bye!");
+    ASSERT_EQ(res, "Hello,\nworld\nGood bye!");
+}
+
 TEST(StrUtils, TestSubtitlesToString)
 {
     const subtitles_t sub_struct {

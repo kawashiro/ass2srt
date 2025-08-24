@@ -39,7 +39,7 @@ field::styles_spec_t::styles_spec_t()
 {
 }
 
-field::styles_spec_t::styles_spec_t(uint8_t alignment, int margin_v, int explicit_y_pos, bool is_drawing)
+field::styles_spec_t::styles_spec_t(uint8_t alignment, int margin_v, float explicit_y_pos, bool is_drawing)
     : alignment(alignment)
     , margin_v(margin_v)
     , explicit_y_pos(explicit_y_pos)
@@ -122,7 +122,7 @@ auto field::parse_inline_style(const std::string& value) -> field::styles_spec_t
             if (args_list.size() != 2) {
                 throw std::invalid_argument("Invalid arguments count for pos() function");
             }
-            result.explicit_y_pos = std::stoi(args_list[1]);
+            result.explicit_y_pos = std::stof(args_list[1]);
 
         } else if (fn_name_s == "move") {
             const size_t min_args_cnt = 4;
@@ -133,9 +133,9 @@ auto field::parse_inline_style(const std::string& value) -> field::styles_spec_t
             if (args_list.size() < min_args_cnt || args_list.size() > max_args_cnt) {
                 throw std::invalid_argument("Invalid arguments count for move() function");
             }
-            auto y_begin = std::stoi(args_list[1]);
-            auto y_end = std::stoi(args_list[3]);
-            result.explicit_y_pos = static_cast<int>(std::round((y_begin + y_end) / 2.0));
+            auto y_begin = std::stof(args_list[1]);
+            auto y_end = std::stof(args_list[3]);
+            result.explicit_y_pos = std::round((y_begin + y_end) / 2.0F);
         }
     }
 
@@ -146,8 +146,8 @@ auto field::parse_plain_text(const std::string& value) -> std::string
 {
     std::string out = value;
     strutils::replace_all(out, "\\N", "\n");
-    strutils::trim(out);
-    strutils::replace_all(out, "\n\n", "\n");
+    out = strutils::dedup_eol(out);
+
     return out;
 }
 

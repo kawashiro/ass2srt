@@ -20,7 +20,7 @@ auto vpos::calculate_vpos(const int v_size, const int line_margin_v, const field
         const int event_margin = inline_style.margin_v >= 0 ? inline_style.margin_v : line_margin_v;
         const auto effective_margin = static_cast<float>(event_margin > 0 ? event_margin : line_style.margin_v);
         if (inline_style.explicit_y_pos >= 0) {
-            result = 1.0F - static_cast<float>(inline_style.explicit_y_pos) / v_size_f;
+            result = 1.0F - inline_style.explicit_y_pos / v_size_f;
         } else if (ALIGN_IS_BOTTOM(effective_alignment)) {
             result = effective_margin / v_size_f;
         } else if (ALIGN_IS_TOP(effective_alignment)) {

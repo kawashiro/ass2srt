@@ -192,7 +192,7 @@ auto merge_text(std::vector<subline_part_ext_t>& parts) -> std::string
     std::vector<subline_part_ext_t> parts_copy;
     std::set<std::string> met;
     for (const auto& part : parts) {
-        if (met.contains(part.text)) {
+        if (part.text.length() > 3 && met.contains(part.text)) {
             continue;
         }
         parts_copy.push_back(part);

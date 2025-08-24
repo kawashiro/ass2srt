@@ -47,6 +47,26 @@ void strutils::replace_all(std::string& value, const std::string& search, const 
     }
 }
 
+auto strutils::dedup_eol(const std::string& value) -> std::string
+{
+    bool prev_eol = false;
+    std::string out;
+
+    for (const char& it : value) {
+        if (it == '\n') {
+            if (!prev_eol) {
+                out.push_back(it);
+                prev_eol = true;
+            }
+        } else {
+            out.push_back(it);
+            prev_eol = false;
+        }
+    }
+
+    return out;
+}
+
 auto strutils::split(std::string input, const char delimiter) -> std::vector<std::string>
 {
     std::vector<std::string> parts;
