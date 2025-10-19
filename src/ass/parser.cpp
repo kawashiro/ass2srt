@@ -101,6 +101,18 @@ ass_res_t::ass_res_t(std::istream& istream, subtitles_t& result, const std::set<
 {
 }
 
+auto ass_res_t::get_style(const std::string& style_name) -> field::styles_spec_t
+{
+    auto style_spec_it = this->styles_spec.find(style_name);
+    if (style_spec_it == this->styles_spec.end()) {
+        if (style_name == "Default") {
+            return this->default_style;
+        }
+        throw std::invalid_argument(strutils::format("Style %s is not defined", style_name.c_str()));
+    }
+    return style_spec_it->second;
+}
+
 // InitialState
 auto InitialState::transition(ass_res_t& value) -> std::unique_ptr<StateType>
 {
@@ -283,7 +295,7 @@ auto EventDialogueLineState::transition(ass_res_t& value) -> std::unique_ptr<Sta
 
     parser.on<std::vector<ass_res_t::subline_part_t>>(field::TEXT, [](std::string& value) {
         auto* parts = new std::vector<ass_res_t::subline_part_t>();
-        int prev_explicit_y_pos = -1;
+        float prev_explicit_y_pos = -1.0F;
         for (size_t part_begin = 0, part_end = 0; part_end + 1 < value.length();) {
             part_end = value.find('{', part_begin + 1);
             if (part_end == std::string::npos) {
@@ -322,11 +334,7 @@ auto EventDialogueLineState::transition(ass_res_t& value) -> std::unique_ptr<Sta
     auto text_parts = parser.get<std::vector<ass_res_t::subline_part_t>>(field::TEXT);
 
     auto style_name = parser.get<std::string>(field::STYLE);
-    auto style_spec_it = value.styles_spec.find(style_name);
-    if (style_spec_it == value.styles_spec.end()) {
-        throw std::invalid_argument(strutils::format("Style %s is not defined", style_name.c_str()));
-    }
-    auto style = style_spec_it->second;
+    auto style = value.get_style(style_name);
 
     subline result { .start_milis = start_millis, .end_milis = end_millis, .parts = {} };
     int ass_part_x_order = 0;

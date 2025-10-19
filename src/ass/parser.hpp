@@ -29,6 +29,7 @@ struct ass_res_t {
         field::styles_spec_t inline_style;
         std::string text;
     };
+    const field::styles_spec_t default_style = { ALIGN_DEFAULT, -1, -1.0F, false };
     std::istream& istream;
     subtitles_t& result;
     std::string token;
@@ -43,6 +44,8 @@ struct ass_res_t {
     bool eof;
 
     ass_res_t(std::istream&, subtitles_t&, const std::set<std::string>&, const std::set<std::string>&, bool);
+
+    auto get_style(const std::string&) -> field::styles_spec_t;
 };
 
 /**
