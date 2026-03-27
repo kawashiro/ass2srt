@@ -73,7 +73,7 @@ if (ASS2SRT_BUILD_UI)
 
     qt_add_executable(ass2srt-gui ${ASS2SRT_SOURCES} ${ASS2SRT_UI_SOURCES} ${WIN32_RESOURCES})
     target_include_directories(ass2srt-gui PRIVATE "${PROJECT_BINARY_DIR}/src")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--whole-archive -lbz2 -lbrotlidec -lbrotlicommon -Wl,--no-whole-archive")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--whole-archive -lbz2 -lbrotlidec -lbrotlicommon -llcms2 -llzma -Wl,--no-whole-archive")
     target_link_libraries(ass2srt-gui PRIVATE freetype png z Qt6::Widgets)
     set_target_properties(ass2srt-gui PROPERTIES WIN32_EXECUTABLE ON)
     install(TARGETS ass2srt-gui DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
